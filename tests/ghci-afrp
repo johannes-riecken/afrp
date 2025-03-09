@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ghci -fglasgow-exts -package lang -package concurrent -i../src -L../src

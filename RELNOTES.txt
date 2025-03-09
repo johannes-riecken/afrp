@@ -1,0 +1,63 @@
+
+AFRP (Arrowized Functional Reactive Programming)
+
+Release Notes  (Last Update: May 1, 2002)
+-------------------------------------------
+
+Pre-requisites:
+
+    - An installation of Hugs98 or ghc (5.02.2 or higher).
+
+      AFRP has been tested with various releases of hugs98 and ghc
+      5.x, under both Linux and Windows 2000.
+
+    - Ross Paterson's Arrows bundle.
+
+      This includes the Arrows library, preprocessor for the arrows
+      syntactic sugar, and numerous examples.  The arrows bundle is
+      available for download from:
+
+       http://www.haskell.org/arrows
+
+      More information on Arrows is available on Ross Paterson's
+      Arrows web page:
+
+        http://www.soi.city.ac.uk/~ross/arrows/
+
+Building from Sources:
+----------------------
+
+We have tried to make the configuration, compilation and installation
+process as easy as possible.  Please let us know if you encounter any
+difficulties.
+
+1.  Download AFRP, and untar the distribution into some directory,
+    using e.g.:
+    
+      $ tar xzvf afrp-1.X-src.tgz
+
+2.  Edit the file ./config-<platform>-local.mk to reflect how things
+    are set up on your machine.
+
+3.  Type 'make'.
+
+4.  If all went well, type (as root on Linux) 'make install'.
+
+5.  Run the automated test suite:
+
+     $ cd tests
+     $ ./testST
+
+which (hopefully) prints:
+
+    All tests succeeded.
+
+
+Exploring AFRP
+--------------
+
+Currently, the only documentation of the AFRP interface is the type
+signatures and comments provided in src/AFRP.hs.
+
+
+$Id: RELNOTES.txt,v 1.2 2002/05/01 21:06:32 antony Exp $

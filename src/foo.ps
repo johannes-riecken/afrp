@@ -1,0 +1,2131 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 588 768
+%%Title: Enscript Output
+%%For: Antony Courtney
+%%Creator: GNU enscript 1.6.1
+%%CreationDate: Thu Jun 27 14:38:22 2002
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 1
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 1
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 7 7 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-enscript 1.6 1
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Roman
+
+% Fonts.
+/Times-Bold /HeaderFont-Bold MF
+/HeaderDateF /HeaderFont-Bold findfont 12 scalefont def
+
+/Times-Roman /HeaderFont-Times MF
+/HeaderHDRF /HeaderFont-Times findfont 14 scalefont def
+
+/HeaderPageNumF /Helvetica-Bold findfont 28.8 scalefont def
+
+/do_header {	% print enscript header
+  gsave
+    d_header_x d_header_y translate
+
+    % light bar
+    0 0 d_header_w d_header_h 2 div Box
+    .95 setgray fill
+
+    % dark gray boxes
+    /dbw d_header_h 2 mul def	% dark box width
+    /dbc .7 def			% dark box color
+
+    % left dark box.
+    0 0 dbw d_header_h Box
+    dbc setgray fill
+
+    0 setgray 
+    HeaderDateF setfont
+    moddatestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 2 div 2 add moveto show
+    modtimestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 5 div moveto show
+
+    % right dark box
+    d_header_w dbw sub 0 dbw d_header_h Box
+    dbc setgray fill
+
+    HeaderPageNumF setfont
+    1 setgray
+    pagenumstr dup
+    stringwidth pop dbw exch sub 2 div d_header_w dbw sub add
+    d_header_h .2 mul moveto show
+
+    % filename
+    0 setgray 
+    HeaderHDRF setfont
+    d_header_w fname stringwidth pop sub 2 div d_header_h 8 div moveto
+    fname show
+
+    % user supplied header string.
+    user_header_p {
+      /h d_header_h 8 div 5 mul def
+
+      % Implement strict enscript compatibility.
+      user_header_center_str () eq user_header_right_str () eq and {
+        d_header_w user_header_left_str stringwidth pop sub 2 div 
+        h moveto user_header_left_str show
+      } {
+        dbw 5 add h moveto user_header_left_str show
+
+        d_header_w user_header_center_str stringwidth pop sub 2 div 
+        h moveto user_header_center_str show
+
+	d_header_w dbw sub 5 sub user_header_right_str stringwidth pop
+	sub h moveto user_header_right_str show
+      } ifelse
+    } if
+
+  grestore
+} def
+%%EndResource
+/d_page_w 744 def
+/d_page_h 564 def
+/d_header_x 0 def
+/d_header_y 528 def
+/d_header_w 744 def
+/d_header_h 36 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 744 def
+/d_footer_h 0 def
+/d_output_w 744 def
+/d_output_h 528 def
+/cols 2 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 1 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (1) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+({- $Id: AFRP.hs,v 1.14 2002/04/30 23:29:46 henrik Exp $) s
+5 510 M
+(******************************************************************************) s
+5 502 M
+(*                                  A F R P                                   *) s
+5 494 M
+(*                                                                            *) s
+5 486 M
+(*       Module:         AFRP                                                 *) s
+5 478 M
+(*       Purpose:        The AFRP core.                                       *) s
+5 470 M
+(*       Authors:        Antony Courtney and Henrik Nilsson                   *) s
+5 462 M
+(*                                                                            *) s
+5 454 M
+(******************************************************************************) s
+5 446 M
+(-}) s
+5 430 M
+(module AFRP \() s
+5 422 M
+(-- Re-exported modules) s
+5 414 M
+(    module Arrow,) s
+5 406 M
+(    module AFRPTuple,   -- Utility functions and numeric instances for tuples.) s
+5 390 M
+(-- Main types) s
+5 382 M
+(    Time,       -- [s] Both for time w.r.t. some reference and intervals.) s
+5 374 M
+(    SF,         -- Signal Function.) s
+5 366 M
+(    Event,      -- Events; conceptually similar to Maybe \(but abstract\).) s
+5 350 M
+(-- Main instances) s
+5 342 M
+(    -- SF is an instance of Arrow and ArrowLoop. Method instances:) s
+5 334 M
+(    -- arr      :: \(a -> b\) -> SF a b) s
+5 326 M
+(    -- \(>>>\)    :: SF a b -> SF b c -> SF a c) s
+5 318 M
+(    -- first    :: SF a b -> SF \(a,c\) \(b,c\)) s
+5 310 M
+(    -- second   :: SF a b -> SF \(c,a\) \(c,b\)) s
+5 302 M
+(    -- \(***\)    :: SF a b -> SF a' b' -> SF \(a,a'\) \(b,b'\)) s
+5 294 M
+(    -- \(&&&\)    :: SF a b -> SF a b' -> SF a \(b,b'\)) s
+5 286 M
+(    -- returnA  :: SF a a) s
+5 278 M
+(    -- loop     :: SF \(a,c\) \(b,c\) -> SF a b) s
+5 262 M
+(    -- Event is an instance of Functor, Eq, and Ord. Some method instances:) s
+5 254 M
+(    -- fmap     :: \(a -> b\) -> Event a -> Event b) s
+5 246 M
+(    -- \(==\)     :: Event a -> Event a -> Bool) s
+5 238 M
+(    -- \(<=\)     :: Event a -> Event a -> Bool) s
+5 222 M
+(-- Basic signal functions) s
+5 214 M
+(    identity,           -- :: SF a a) s
+5 206 M
+(    constant,           -- :: b -> SF a b) s
+5 198 M
+(    localTime,          -- :: SF a Time) s
+5 190 M
+(    time,               -- :: SF a Time) s
+5 174 M
+(-- Initialization) s
+5 166 M
+(    initially,          -- :: a -> SF a a) s
+5 150 M
+(-- Basic event sources) s
+5 142 M
+(    never,              -- :: SF a \(Event b\)) s
+5 134 M
+(    now,                -- :: b -> SF a \(Event b\)) s
+5 126 M
+(    snap,               -- :: SF a \(Event a\)) s
+5 118 M
+(    after,              -- :: Time -> b -> SF a \(Event b\)) s
+5 110 M
+(    repeatedly,         -- :: Time -> b -> SF a \(Event b\)) s
+5 102 M
+(    edge,               -- :: SF Bool \(Event \(\)\)) s
+5 94 M
+(    edgeJust,           -- :: SF \(Maybe a\) \(Event a\)) s
+5 86 M
+(    edgeBy,             -- :: \(a -> a -> Maybe b\) -> a -> SF a \(Event b\)) s
+5 70 M
+(-- Stateful event suppression) s
+5 62 M
+(    notYet,             -- :: SF \(Event a\) \(Event a\)) s
+5 46 M
+(-- Collection-oriented combinators) s
+5 38 M
+(    par,                -- :: Functor col => col \(SF a b\) -> SF a \(col b\)) s
+5 22 M
+(-- Switchers) s
+5 14 M
+(    switch,  dSwitch,   -- :: SF a \(b, Event c\) -> \(c -> SF a b\) -> SF a b) s
+5 6 M
+(    kSwitch, dkSwitch,  -- :: SF a b) s
+377 518 M
+(                        --    -> SF \(a,b\) \(Event c\)) s
+377 510 M
+(                        --    -> \(SF a b -> c -> SF a b\)) s
+377 502 M
+(                        --    -> SF a b) s
+377 494 M
+(    rSwitch, drSwitch,  -- :: SF a b -> SF \(a,Event \(SF a b\)\) b) s
+377 486 M
+(    pSwitch, dpSwitch,  -- :: Functor col =>) s
+377 478 M
+(                        --        col \(SF a b\)) s
+377 470 M
+(                        --        -> SF \(a, col b\) \(Event c\)) s
+377 462 M
+(                        --        -> \(col \(SF a b\) -> c -> SF a \(col b\)\)) s
+377 454 M
+(                        --        -> SF a \(col b\)) s
+377 446 M
+(    rpSwitch,drpSwitch, -- :: Functor col =>) s
+377 438 M
+(                        --        col \(SF a b\)) s
+377 430 M
+(                        --        -> SF \(a, Event \(col \(SF a b\)->col \(SF a b\)\)\)) s
+377 422 M
+(                        --              \(col b\)) s
+377 406 M
+(-- Wave-form generation) s
+377 398 M
+(    hold,               -- :: a -> SF \(Event a\) a) s
+377 390 M
+(    dHold,              -- :: a -> SF \(Event a\) a) s
+377 382 M
+(    trackAndHold,       -- :: a -> SF \(Maybe a\) a) s
+377 374 M
+(    dTrackAndHold,      -- :: a -> SF \(Maybe a\) a) s
+377 358 M
+(-- Accumulators) s
+377 350 M
+(    accum,              -- :: a -> SF \(Event \(a -> a\)\) \(Event a\)) s
+377 342 M
+(    accumBy,            -- :: \(b -> a -> b\) -> b -> SF \(Event a\) \(Event b\)) s
+377 334 M
+(    accumFilter,        -- :: \(c -> a -> \(c, Maybe b\)\) -> c) s
+377 326 M
+(                        --    -> SF \(Event a\) \(Event b\)) s
+377 318 M
+(    count,              -- :: Integral b => SF \(Event a\) \(Event b\)) s
+377 302 M
+(-- Delay) s
+377 294 M
+(    delay,              -- :: a -> SF a a) s
+377 278 M
+(-- Integral) s
+377 270 M
+(    integral,           -- :: Fractional a => SF a a) s
+377 254 M
+(-- Loops with guaranteed well-defined feedback) s
+377 246 M
+(    loopDelay,          -- :: c -> SF \(a,c\) \(b,c\) -> SF a b) s
+377 238 M
+(    loopIntegral,       -- :: Fractional c => SF \(a,c\) \(b,c\) -> SF a b) s
+377 222 M
+(-- Pointwise functions on events) s
+377 214 M
+(    event,              -- :: a -> \(b -> a\) -> Event b -> a) s
+377 206 M
+(    fromEvent,          -- :: Event a -> a) s
+377 198 M
+(    isEvent,            -- :: Event a -> Bool) s
+377 190 M
+(    isNoEvent,          -- :: Event a -> Bool) s
+377 182 M
+(    tag,                -- :: Event a -> b -> Event b) s
+377 174 M
+(    lMerge,             -- :: Event a -> Event a -> Event a) s
+377 166 M
+(    rMerge,             -- :: Event a -> Event a -> Event a) s
+377 158 M
+(    merge,              -- :: Event a -> Event a -> Event a) s
+377 150 M
+(    mergeBy,            -- :: \(a -> a -> a\) -> Event a -> Event a -> Event a) s
+377 142 M
+(    mergeEvents,        -- :: [Event a] -> Event a) s
+377 134 M
+(    joinE,              -- :: Event a -> Event b -> Event \(a,b\)) s
+377 126 M
+(    filterE,            -- :: \(a -> Bool\) -> Event a -> Event a) s
+377 118 M
+(    gateE,              -- :: Bool -> Event a -> Event a) s
+377 102 M
+(-- Reactimation) s
+377 94 M
+(    reactimate,         -- :: IO a) s
+377 86 M
+(                        --    -> \(Bool -> IO \(DTime, Maybe a\)\)) s
+377 78 M
+(                        --    -> \(Bool -> b -> IO Bool\)) s
+377 70 M
+(                        --    -> SF a b) s
+377 62 M
+(                        --    -> IO \(\)) s
+377 46 M
+(-- Embedding \(tentative: will be revisited\)) s
+377 38 M
+(    DTime,              -- [s] Sampling interval, always > 0.) s
+377 30 M
+(    embed,              -- :: SF a b -> \(a, [\(DTime, Maybe a\)]\) -> [b]) s
+377 22 M
+(    deltaEncode,        -- :: Eq a => DTime -> [a] -> \(a, [\(DTime, Maybe a\)]\)) s
+377 14 M
+(    deltaEncodeBy       -- :: \(a -> a -> Bool\) -> DTime -> [a]) s
+377 6 M
+(                        --    -> \(a, [\(DTime, Maybe a\)]\)) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 2 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (2) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(\) where) s
+5 502 M
+(import Monad \(unless\)) s
+5 486 M
+(import Arrow) s
+5 478 M
+(import AFRPDiagnostics) s
+5 470 M
+(import AFRPTuple) s
+5 462 M
+(import AFRPEvent) s
+5 438 M
+(------------------------------------------------------------------------------) s
+5 430 M
+(-- Basic type definitions with associated utilities) s
+5 422 M
+(------------------------------------------------------------------------------) s
+5 406 M
+(-- The time type is really a bit boguous, since, as time passes, the minimal) s
+5 398 M
+(-- interval between two consecutive floating-point-represented time points) s
+5 390 M
+(-- increases. A better approach is probably to pick a reasonable resolution) s
+5 382 M
+(-- and represent time and time intervals by Integer \(giving the number of) s
+5 374 M
+(-- "ticks"\).) s
+5 358 M
+(-- Time is used both for time intervals \(duration\), and time w.r.t. some) s
+5 350 M
+(-- agreed reference point in time. Conceptually, Time = R, i.e. time can be 0) s
+5 342 M
+(-- or even negative.) s
+5 334 M
+(type Time = Double      -- [s]) s
+5 310 M
+(-- DTime is the time type for lengths of sample intervals. Conceptually,) s
+5 302 M
+(-- DTime = R+ = { x in R | x > 0 }. Don't assume Time and DTime have the) s
+5 294 M
+(-- same representation.) s
+5 278 M
+(type DTime = Double     -- [s]) s
+5 254 M
+(-- Representation of signal function in initial state.) s
+5 246 M
+(-- \(Naming: "TF" stands for Transition Function.\)) s
+5 230 M
+(data SF a b = SF {sfTF :: a -> Transition a b}) s
+5 206 M
+(-- Representation of signal function in running state.) s
+5 198 M
+(-- It would have been nice to have a constructor SFId representing \(arr id\):) s
+5 190 M
+(--) s
+5 182 M
+(--     SFId {sfTF' :: DTime -> a -> Transition a b}) s
+5 174 M
+(--) s
+5 166 M
+(-- But it seems as if we need dependent types as soon as we try to exploit) s
+5 158 M
+(-- that constructor \(note that the type above is too general!\), and a) s
+5 150 M
+(-- work-around based on keeping around an extra function as a "proof" that we) s
+5 142 M
+(-- can do the required coersions, yields codde which is no more efficient) s
+5 134 M
+(-- than using SFArr in the first place.) s
+5 126 M
+(-- \(Naming: "TIVar" stands for "time-input-variable".\)) s
+5 110 M
+(data SF' a b ) s
+5 102 M
+(    = SFConst {sfTF' :: DTime -> a -> Transition a b, sfCVal :: b}) s
+5 94 M
+(    | SFArr   {sfTF' :: DTime -> a -> Transition a b, sfAFun :: a -> b}) s
+5 86 M
+(    | SFTIVar {sfTF' :: DTime -> a -> Transition a b}) s
+5 62 M
+(-- A transition is a pair of the next state \(in the form of a signal) s
+5 54 M
+(-- function\) and the output at the present time step.) s
+5 38 M
+(type Transition a b = \(SF' a b, b\)) s
+5 14 M
+(-- "Smart" constructors. The corresponding "raw" constructors should not) s
+5 6 M
+(-- be used directly for construction.) s
+377 510 M
+(sfConst :: b -> SF' a b) s
+377 502 M
+(sfConst b = sf) s
+377 494 M
+(    where) s
+377 486 M
+(        sf = SFConst {sfTF' = \\_ _ -> \(sf, b\), sfCVal = b}) s
+377 462 M
+(-- !!! We could/should use NeverEvent here!) s
+377 454 M
+(sfNever :: SF' a \(Event b\)) s
+377 446 M
+(sfNever = sfConst NoEvent) s
+377 422 M
+(sfId :: SF' a a) s
+377 414 M
+(sfId = sf) s
+377 406 M
+(    where) s
+377 398 M
+(        sf = SFArr {sfTF' = \\_ a -> \(sf, a\), sfAFun = id}) s
+377 374 M
+(sfArr :: \(a -> b\) -> SF' a b) s
+377 366 M
+(sfArr f = sf) s
+377 358 M
+(    where) s
+377 350 M
+(        sf = SFArr {sfTF' = \\_ a -> \(sf, f a\), sfAFun = f}) s
+377 326 M
+(-- Freezes a "running" signal function, i.e., turns it into a continuation in) s
+377 318 M
+(-- the form of a plain signal function.) s
+377 310 M
+(freeze :: SF' a b -> DTime -> SF a b) s
+377 302 M
+(freeze sf dt = SF {sfTF = \(sfTF' sf\) dt}) s
+377 278 M
+(freezeCol :: Functor col => col \(SF' a b\) -> DTime -> col \(SF a b\)) s
+377 270 M
+(freezeCol sfs dt = fmap \(flip freeze dt\) sfs) s
+377 246 M
+(------------------------------------------------------------------------------) s
+377 238 M
+(-- Arrow instance and implementation) s
+377 230 M
+(------------------------------------------------------------------------------) s
+377 214 M
+(instance Arrow SF where) s
+377 206 M
+(    arr    = arrPrim) s
+377 198 M
+(    \(>>>\)  = compPrim) s
+377 190 M
+(    first  = firstPrim) s
+377 182 M
+(    second = secondPrim) s
+377 158 M
+(-- Lifting.) s
+377 150 M
+(arrPrim :: \(a -> b\) -> SF a b) s
+377 142 M
+(arrPrim f = SF {sfTF = \\a -> \(sfArr f, f a\)}) s
+377 118 M
+(-- Composition.) s
+377 110 M
+(-- The definition exploits the following identities:) s
+377 102 M
+(--     sf         >>> constant c = constant c) s
+377 94 M
+(--     constant c >>> arr f      = constant \(f c\)) s
+377 86 M
+(--     arr f      >>> arr g      = arr \(g . f\)) s
+377 78 M
+(-- \(It would have been nice to explit e.g. identity >>> sf = sf, but it would) s
+377 70 M
+(-- seem that we need dependent types for that.\)) s
+377 62 M
+(compPrim :: SF a b -> SF b c -> SF a c) s
+377 54 M
+(compPrim \(SF {sfTF = tf10}\) \(SF {sfTF = tf20}\) = SF {sfTF = tf0}) s
+377 46 M
+(    where) s
+377 38 M
+(        tf0 a0 = \(cpAux sf1 sf2, c0\)) s
+377 30 M
+(            where) s
+377 22 M
+(                \(sf1, b0\) = tf10 a0) s
+377 14 M
+(                \(sf2, c0\) = tf20 b0) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 3 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (3) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(        cpAux sf1             sf2@\(SFConst{}\) = sfConst \(sfCVal sf2\)) s
+5 510 M
+(        cpAux sf1@\(SFConst{}\) sf2@\(SFArr {}\)  = sfConst \(sfAFun sf2) s
+5 502 M
+(                                                                \(sfCVal sf1\)\)) s
+5 494 M
+(        cpAux sf1@\(SFArr {}\)  sf2@\(SFArr {}\)  = sfArr \(sfAFun sf2 . sfAFun sf1\)) s
+5 486 M
+(        cpAux sf1             sf2             = SFTIVar {sfTF' = tf}) s
+5 478 M
+(            where) s
+5 470 M
+(                tf dt a = \(cpAux sf1' sf2', c\)) s
+5 462 M
+(                    where) s
+5 454 M
+(                        \(sf1', b\) = \(sfTF' sf1\) dt a) s
+5 446 M
+(                        \(sf2', c\) = \(sfTF' sf2\) dt b) s
+5 422 M
+(-- Widening.) s
+5 414 M
+(-- The definition exploits the following identities:) s
+5 406 M
+(--     first \(constant b\) = arr \(\\\(_, c\) -> \(b, c\)\)) s
+5 398 M
+(--     \(first \(arr f\)\)    = arr \(\\\(a, c\) -> \(f a, c\)\)) s
+5 390 M
+(-- \(It would have been nice to explit first identity = identity, but it would) s
+5 382 M
+(-- seem that we need dependent types for that.\)) s
+5 374 M
+(firstPrim :: SF a b -> SF \(a,c\) \(b,c\)) s
+5 366 M
+(firstPrim \(SF {sfTF = tf10}\) = SF {sfTF = tf0}) s
+5 358 M
+(    where) s
+5 350 M
+(        tf0 \(a0, c0\) = \(fpAux sf1, \(b0, c0\)\)) s
+5 342 M
+(            where) s
+5 334 M
+(                \(sf1, b0\) = tf10 a0 ) s
+5 318 M
+(        fpAux \(SFConst {sfCVal = b}\) = sfArr \(\\\(_, c\) -> \(b, c\)\)) s
+5 310 M
+(        fpAux \(SFArr   {sfAFun = f}\) = sfArr \(\\\(a, c\) -> \(f a, c\)\)) s
+5 302 M
+(        fpAux sf1                    = SFTIVar {sfTF' = tf}) s
+5 294 M
+(            where) s
+5 286 M
+(                tf dt \(a, c\) = \(fpAux sf1', \(b, c\)\)) s
+5 278 M
+(                    where) s
+5 270 M
+(                        \(sf1', b\) = \(sfTF' sf1\) dt a ) s
+5 246 M
+(secondPrim :: SF a b -> SF \(c,a\) \(c,b\)) s
+5 238 M
+(secondPrim \(SF {sfTF = tf10}\) = SF {sfTF = tf0}) s
+5 230 M
+(    where) s
+5 222 M
+(        tf0 \(c0, a0\) = \(spAux sf1, \(c0, b0\)\)) s
+5 214 M
+(            where) s
+5 206 M
+(                \(sf1, b0\) = tf10 a0 ) s
+5 190 M
+(        spAux \(SFConst {sfCVal = b}\) = sfArr \(\\\(c, _\) -> \(c, b\)\)) s
+5 182 M
+(        spAux \(SFArr   {sfAFun = f}\) = sfArr \(\\\(c, a\) -> \(c, f a\)\)) s
+5 174 M
+(        spAux sf1                    = SFTIVar {sfTF' = tf}) s
+5 166 M
+(            where) s
+5 158 M
+(                tf dt \(c, a\) = \(spAux sf1', \(c, b\)\)) s
+5 150 M
+(                    where) s
+5 142 M
+(                        \(sf1', b\) = \(sfTF' sf1\) dt a ) s
+5 110 M
+(------------------------------------------------------------------------------) s
+5 102 M
+(-- ArrowLoop instance and implementation) s
+5 94 M
+(------------------------------------------------------------------------------) s
+5 78 M
+(instance ArrowLoop SF where) s
+5 70 M
+(    loop = loopPrim) s
+5 46 M
+(loopPrim :: SF \(a,c\) \(b,c\) -> SF a b) s
+5 38 M
+(loopPrim \(SF {sfTF = tf10}\) = SF {sfTF = tf0}) s
+5 30 M
+(    where) s
+5 22 M
+(        tf0 a0 = \(loopAux sf1, b0\)) s
+5 14 M
+(            where) s
+5 6 M
+(                \(sf1, \(b0, c0\)\) = tf10 \(a0, c0\)) s
+377 510 M
+(        loopAux \(SFConst {sfCVal = \(b, _\)}\) = sfConst b) s
+377 502 M
+(        loopAux sf1                         = SFTIVar {sfTF' = tf}) s
+377 494 M
+(            where) s
+377 486 M
+(                tf dt a = \(loopAux sf1', b\)) s
+377 478 M
+(                    where) s
+377 470 M
+(                        \(sf1', \(b, c\)\) = \(sfTF' sf1\) dt \(a, c\)) s
+377 446 M
+(------------------------------------------------------------------------------) s
+377 438 M
+(-- Basic signal functions) s
+377 430 M
+(------------------------------------------------------------------------------) s
+377 414 M
+(-- Identity: identity = arr id) s
+377 406 M
+(identity :: SF a a) s
+377 398 M
+(identity = SF {sfTF = \\a -> \(sfId, a\)}) s
+377 374 M
+(-- Identity: constant b = arr \(const b\)) s
+377 366 M
+(constant :: b -> SF a b) s
+377 358 M
+(constant b = SF {sfTF = \\_ -> \(sfConst b, b\)}) s
+377 334 M
+(-- Outputs the time passed since the signal function instance was started.) s
+377 326 M
+(localTime :: SF a Time) s
+377 318 M
+(localTime = constant 1.0 >>> integral) s
+377 294 M
+(-- Alternative name for localTime.) s
+377 286 M
+(time :: SF a Time) s
+377 278 M
+(time = localTime) s
+377 254 M
+(------------------------------------------------------------------------------) s
+377 246 M
+(-- Initialization) s
+377 238 M
+(------------------------------------------------------------------------------) s
+377 222 M
+(-- The identity function, except at \(local\) time 0 where the initial value is) s
+377 214 M
+(-- output instead.) s
+377 206 M
+(initially :: a -> SF a a) s
+377 198 M
+(initially a_init = SF {sfTF = \\_ -> \(sfId, a_init\)}) s
+377 174 M
+(------------------------------------------------------------------------------) s
+377 166 M
+(-- Basic event sources) s
+377 158 M
+(------------------------------------------------------------------------------) s
+377 142 M
+(-- Event source which never occurs.) s
+377 134 M
+(-- !!! We could/should use NeverEvent here.) s
+377 126 M
+(never :: SF a \(Event b\)) s
+377 118 M
+(never = SF {sfTF = \\_ -> \(sfNever, NoEvent\)}) s
+377 94 M
+(-- Event source with a single occurrence at time 0. The value of the event) s
+377 86 M
+(-- is given by t he function argument.) s
+377 78 M
+(now :: b -> SF a \(Event b\)) s
+377 70 M
+(now b0 = SF {sfTF = \\_ -> \(sfNever, Event b0\)}) s
+377 46 M
+(-- Event source with a single occurrence at time 0. The value of the event) s
+377 38 M
+(-- is obtained by sampling the input at that time.) s
+377 30 M
+(snap :: SF a \(Event a\)) s
+377 22 M
+(snap = SF {sfTF = \\a0 -> \(sfNever, Event a0\)}) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 4 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (4) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(-- Event source with a single occurrence at or as soon after \(local\) time t_ev) s
+5 510 M
+(-- as possible.) s
+5 502 M
+(after :: Time -> b -> SF a \(Event b\)) s
+5 494 M
+(after t_ev x = SF {sfTF = tf0}) s
+5 486 M
+(    where) s
+5 478 M
+(        tf0 _ = if t_ev <= 0 then) s
+5 470 M
+(                    \(sfNever, Event x\)) s
+5 462 M
+(                else) s
+5 454 M
+(                    \(afterAux 0.0, NoEvent\)) s
+5 438 M
+(        afterAux t = SFTIVar {sfTF' = tf}) s
+5 430 M
+(            where) s
+5 422 M
+(                tf dt _ = let t' = t + dt) s
+5 414 M
+(                          in) s
+5 406 M
+(                              if t' >= t_ev then) s
+5 398 M
+(                                  \(sfNever, Event x\)) s
+5 390 M
+(                              else) s
+5 382 M
+(                                  \(afterAux t', NoEvent\)) s
+5 358 M
+(-- Event source with repeated occurrences with interval dt) s
+5 350 M
+(-- Note: If the interval is too short w.r.t. the sampling intervals,) s
+5 342 M
+(-- the result will be that events occur at every sample. However, no more) s
+5 334 M
+(-- than one event results from any sampling interval, thus avoiding an) s
+5 326 M
+(-- "event backlog" should sampling become more frequent at some later) s
+5 318 M
+(-- point in time.) s
+5 310 M
+(repeatedly :: Time -> b -> SF a \(Event b\)) s
+5 302 M
+(repeatedly p_ev x | p_ev > 0 = SF {sfTF = tf0}) s
+5 294 M
+(                  | otherwise = afrpErr "repeatedly" "Non-positive period.") s
+5 286 M
+(    where) s
+5 278 M
+(        tf0 _ = \(repAux p_ev 0.0, NoEvent\)) s
+5 262 M
+(        repAux t_ev t = SFTIVar {sfTF' = tf}) s
+5 254 M
+(            where) s
+5 246 M
+(                tf dt _ = let t' = t + dt) s
+5 238 M
+(                          in) s
+5 230 M
+(                              if t' >= t_ev then) s
+5 222 M
+(                                  \(repAux \(nextEventTime t' t_ev\) t', Event x\)) s
+5 214 M
+(                              else) s
+5 206 M
+(                                  \(repAux t_ev t', NoEvent\)) s
+5 198 M
+(                nextEventTime t t_ev =) s
+5 190 M
+(                    fromIntegral \(truncate \(t / p_ev\) + 1\) * p_ev) s
+5 166 M
+(-- A rising edge detector. Useful for things like detecting key presses.) s
+5 158 M
+(-- Note that we initialize the loop with state set to True so that there) s
+5 150 M
+(-- will not be an occurence at t0 in the logical time frame in which) s
+5 142 M
+(-- this is started.) s
+5 134 M
+(edge :: SF Bool \(Event \(\)\)) s
+5 126 M
+(edge = edgeBy isEdge True) s
+5 118 M
+(    where) s
+5 110 M
+(        isEdge False False = Nothing) s
+5 102 M
+(        isEdge False True  = Just \(\)) s
+5 94 M
+(        isEdge True  True  = Nothing) s
+5 86 M
+(        isEdge True  False = Nothing) s
+5 62 M
+(-- Edge detector parameterized on the edge detection function and initial) s
+5 54 M
+(-- state, i.e., the previous input sample. The first argument to the) s
+5 46 M
+(-- edge detection function is the previous sample, the second the current one.) s
+5 38 M
+(edgeBy :: \(a -> a -> Maybe b\) -> a -> SF a \(Event b\)) s
+5 30 M
+(edgeBy isEdge a_init = SF {sfTF = tf0}) s
+5 22 M
+(    where) s
+5 14 M
+(        tf0 a0 = \(ebAux a0, maybeToEvent \(isEdge a_init a0\)\)) s
+377 518 M
+(        ebAux a_prev = SFTIVar {sfTF' = tf}) s
+377 510 M
+(            where) s
+377 502 M
+(                tf dt a = \(ebAux a, maybeToEvent \(isEdge a_prev a\)\)) s
+377 478 M
+(-- Detects an edge where a maybe signal is changing from nothing to something.) s
+377 470 M
+(edgeJust :: SF \(Maybe a\) \(Event a\)) s
+377 462 M
+(edgeJust = edgeBy isJustEdge \(Just undefined\)) s
+377 454 M
+(    where) s
+377 446 M
+(        isJustEdge Nothing  Nothing     = Nothing) s
+377 438 M
+(        isJustEdge Nothing  ma@\(Just _\) = ma) s
+377 430 M
+(        isJustEdge \(Just _\) \(Just _\)    = Nothing) s
+377 422 M
+(        isJustEdge \(Just _\) Nothing     = Nothing) s
+377 398 M
+(------------------------------------------------------------------------------) s
+377 390 M
+(-- Stateful event suppression) s
+377 382 M
+(------------------------------------------------------------------------------) s
+377 366 M
+(-- Suppression of initial \(at local time 0\) event.) s
+377 358 M
+(notYet :: SF \(Event a\) \(Event a\)) s
+377 350 M
+(notYet = initially NoEvent) s
+377 326 M
+(------------------------------------------------------------------------------) s
+377 318 M
+(-- Collection-oriented combinators) s
+377 310 M
+(------------------------------------------------------------------------------) s
+377 294 M
+(-- Spatial parallel composition of a signal function collection.) s
+377 286 M
+(par :: Functor col => col \(SF a b\) -> SF a \(col b\)) s
+377 278 M
+(par sfs0 = SF {sfTF = tf0}) s
+377 270 M
+(    where) s
+377 262 M
+(        tf0 a0 =) s
+377 254 M
+(            let sfbs0 = fmap \(\\sf0 -> \(sfTF sf0\) a0\) sfs0) s
+377 246 M
+(                sfs   = fmap fst sfbs0) s
+377 238 M
+(                bs0   = fmap snd sfbs0) s
+377 230 M
+(            in) s
+377 222 M
+(                \(parAux sfs, bs0\)) s
+377 198 M
+(-- Internal definition. Also used in parallel swithers.) s
+377 190 M
+(parAux :: Functor col => col \(SF' a b\) -> SF' a \(col b\)) s
+377 182 M
+(parAux sfs = SFTIVar {sfTF' = tf}) s
+377 174 M
+(    where) s
+377 166 M
+(        tf dt a = ) s
+377 158 M
+(            let sfbs' = fmap \(\\sf -> \(sfTF' sf\) dt a\) sfs) s
+377 150 M
+(                sfs'  = fmap fst sfbs') s
+377 142 M
+(                bs    = fmap snd sfbs') s
+377 134 M
+(            in) s
+377 126 M
+(                \(parAux sfs', bs\)) s
+377 102 M
+(------------------------------------------------------------------------------) s
+377 94 M
+(-- Switchers) s
+377 86 M
+(------------------------------------------------------------------------------) s
+377 70 M
+(-- !!! We could detect a NeverEvent in the various switches.) s
+377 62 M
+(-- !!! In which case we must ensure that SFConst ... NeverEvent ...) s
+377 54 M
+(-- !!! is covered as well!) s
+377 38 M
+(-- Basic switch.) s
+377 30 M
+(switch :: SF a \(b, Event c\) -> \(c -> SF a b\) -> SF a b) s
+377 22 M
+(switch \(SF {sfTF = tf10}\) k = SF {sfTF = tf0}) s
+377 14 M
+(    where) s
+377 6 M
+(        tf0 a0 =) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 5 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (5) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(            case tf10 a0 of) s
+5 510 M
+(                \(sf1, \(b0, NoEvent\)\)  -> \(switchAux sf1, b0\)) s
+5 502 M
+(                \(_,   \(_,  Event c0\)\) -> sfTF \(k c0\) a0) s
+5 486 M
+(        switchAux \(SFConst {sfCVal = \(b, NoEvent\)}\) = sfConst b) s
+5 478 M
+(        switchAux sf1                               = SFTIVar {sfTF' = tf}) s
+5 470 M
+(            where) s
+5 462 M
+(                tf dt a =) s
+5 454 M
+(                    case \(sfTF' sf1\) dt a of) s
+5 446 M
+(                        \(sf1', \(b, NoEvent\)\) -> \(switchAux sf1', b\)) s
+5 438 M
+(                        \(_,    \(_, Event c\)\) -> sfTF \(k c\) a) s
+5 414 M
+(-- Switch with delayed observation.) s
+5 406 M
+(dSwitch :: SF a \(b, Event c\) -> \(c -> SF a b\) -> SF a b) s
+5 398 M
+(dSwitch \(SF {sfTF = tf10}\) k = SF {sfTF = tf0}) s
+5 390 M
+(    where) s
+5 382 M
+(        tf0 a0 =) s
+5 374 M
+(            let \(sf1, \(b0, ec0\)\) = tf10 a0) s
+5 366 M
+(            in \(case ec0 of) s
+5 358 M
+(                    NoEvent  -> dSwitchAux sf1) s
+5 350 M
+(                    Event c0 -> fst \(sfTF \(k c0\) a0\),) s
+5 342 M
+(                b0\)) s
+5 326 M
+(        dSwitchAux \(SFConst {sfCVal = \(b, NoEvent\)}\) = sfConst b) s
+5 318 M
+(        dSwitchAux sf1                               = SFTIVar {sfTF' = tf}) s
+5 310 M
+(            where) s
+5 302 M
+(                tf dt a =) s
+5 294 M
+(                    let \(sf1', \(b, ec\)\) = \(sfTF' sf1\) dt a) s
+5 286 M
+(                    in \(case ec of) s
+5 278 M
+(                            NoEvent -> dSwitchAux sf1') s
+5 270 M
+(                            Event c -> fst \(sfTF \(k c\) a\),) s
+5 254 M
+(                        b\)) s
+5 230 M
+(-- "Call-with-current-continuation" switch.) s
+5 222 M
+(kSwitch :: SF a b -> SF \(a,b\) \(Event c\) -> \(SF a b -> c -> SF a b\) -> SF a b) s
+5 214 M
+(kSwitch sf10@\(SF {sfTF = tf10}\) \(SF {sfTF = tfe0}\) k = SF {sfTF = tf0}) s
+5 206 M
+(    where) s
+5 198 M
+(        tf0 a0 =) s
+5 190 M
+(            let \(sf1, b0\) = tf10 a0) s
+5 182 M
+(            in) s
+5 174 M
+(                case tfe0 \(a0, b0\) of) s
+5 166 M
+(                    \(sfe, NoEvent\)  -> \(kSwitchAux sf1 sfe, b0\)) s
+5 158 M
+(                    \(_,   Event c0\) -> sfTF \(k sf10 c0\) a0) s
+5 142 M
+(        kSwitchAux sf1 \(SFConst {sfCVal = NoEvent}\) = sf1) s
+5 134 M
+(        kSwitchAux sf1 sfe                          = SFTIVar {sfTF' = tf}) s
+5 126 M
+(            where) s
+5 118 M
+(                tf dt a =) s
+5 110 M
+(                    let \(sf1', b\) = \(sfTF' sf1\) dt a) s
+5 102 M
+(                    in) s
+5 94 M
+(                        case \(sfTF' sfe\) dt \(a, b\) of) s
+5 86 M
+(                            \(sfe', NoEvent\) -> \(kSwitchAux sf1' sfe', b\)) s
+5 78 M
+(                            \(_,    Event c\) -> sfTF \(k \(freeze sf1 dt\) c\) a) s
+5 54 M
+(-- kSwitch with delayed observation.) s
+5 46 M
+(dkSwitch :: SF a b -> SF \(a,b\) \(Event c\) -> \(SF a b -> c -> SF a b\) -> SF a b) s
+5 38 M
+(dkSwitch sf10@\(SF {sfTF = tf10}\) \(SF {sfTF = tfe0}\) k = SF {sfTF = tf0}) s
+5 30 M
+(    where) s
+5 22 M
+(        tf0 a0 =) s
+5 14 M
+(            let \(sf1, b0\) = tf10 a0) s
+5 6 M
+(            in \(case tfe0 \(a0, b0\) of) s
+377 518 M
+(                    \(sfe, NoEvent\)  -> kSwitchAux sf1 sfe) s
+377 510 M
+(                    \(_,   Event c0\) -> fst \(sfTF \(k sf10 c0\) a0\),) s
+377 502 M
+(                b0\)) s
+377 486 M
+(        kSwitchAux sf1 \(SFConst {sfCVal = NoEvent}\) = sf1) s
+377 478 M
+(        kSwitchAux sf1 sfe                          = SFTIVar {sfTF' = tf}) s
+377 470 M
+(            where) s
+377 462 M
+(                tf dt a =) s
+377 454 M
+(                    let \(sf1', b\) = \(sfTF' sf1\) dt a) s
+377 446 M
+(                    in \(case \(sfTF' sfe\) dt \(a, b\) of) s
+377 438 M
+(                            \(sfe', NoEvent\) -> kSwitchAux sf1' sfe') s
+377 430 M
+(                            \(_, Event c\) -> fst \(sfTF \(k \(freeze sf1 dt\) c\) a\),) s
+377 422 M
+(                        b\)) s
+377 398 M
+(-- Recurring switch.) s
+377 390 M
+(rSwitch :: SF a b -> SF \(a, Event \(SF a b\)\) b) s
+377 382 M
+(rSwitch sf = switch \(first sf\) rSwitch') s
+377 374 M
+(    where) s
+377 366 M
+(        rSwitch' sf = switch \(sf *** notYet\) rSwitch') s
+377 342 M
+(-- Recurring switch with delayed observation.) s
+377 334 M
+(drSwitch :: SF a b -> SF \(a, Event \(SF a b\)\) b) s
+377 326 M
+(drSwitch sf = dSwitch \(first sf\) drSwitch') s
+377 318 M
+(    where) s
+377 310 M
+(        drSwitch' sf = dSwitch \(sf *** notYet\) drSwitch') s
+377 286 M
+(-- Parallel switch \(dynamic collection of signal functions spatially composed) s
+377 278 M
+(-- in parallel\).) s
+377 270 M
+(pSwitch :: Functor col =>) s
+377 262 M
+(    col \(SF a b\) -> SF \(a,col b\) \(Event c\) -> \(col \(SF a b\)->c-> SF a \(col b\)\)) s
+377 254 M
+(    -> SF a \(col b\)) s
+377 246 M
+(pSwitch sfs0 \(SF {sfTF = tfe0}\) k = SF {sfTF = tf0}) s
+377 238 M
+(    where) s
+377 230 M
+(        tf0 a0 =) s
+377 222 M
+(            let sfbs0 = fmap \(\\sf0 -> \(sfTF sf0\) a0\) sfs0) s
+377 214 M
+(                sfs   = fmap fst sfbs0) s
+377 206 M
+(                bs0   = fmap snd sfbs0) s
+377 198 M
+(            in) s
+377 190 M
+(                case tfe0 \(a0, bs0\) of) s
+377 182 M
+(                    \(sfe, NoEvent\)  -> \(pSwitchAux sfs sfe, bs0\)) s
+377 174 M
+(                    \(_,   Event c0\) -> sfTF \(k sfs0 c0\) a0) s
+377 158 M
+(        pSwitchAux sfs \(SFConst {sfCVal = NoEvent}\) = parAux sfs) s
+377 150 M
+(        pSwitchAux sfs sfe = SFTIVar {sfTF' = tf}) s
+377 142 M
+(            where) s
+377 134 M
+(                tf dt a =) s
+377 126 M
+(                    let sfbs' = fmap \(\\sf -> \(sfTF' sf\) dt a\) sfs) s
+377 118 M
+(                        sfs'  = fmap fst sfbs') s
+377 110 M
+(                        bs    = fmap snd sfbs') s
+377 102 M
+(                    in) s
+377 94 M
+(                        case \(sfTF' sfe\) dt \(a, bs\) of) s
+377 86 M
+(                            \(sfe', NoEvent\) -> \(pSwitchAux sfs' sfe', bs\)) s
+377 78 M
+(                            \(_,    Event c\) -> sfTF \(k \(freezeCol sfs dt\) c\) a) s
+377 54 M
+(-- Parallel switch with delayed observation.) s
+377 46 M
+(dpSwitch :: Functor col =>) s
+377 38 M
+(    col \(SF a b\) -> SF \(a,col b\) \(Event c\) -> \(col \(SF a b\)->c->SF a \(col b\)\)) s
+377 30 M
+(    -> SF a \(col b\)) s
+377 22 M
+(dpSwitch  sfs0 \(SF {sfTF = tfe0}\) k = SF {sfTF = tf0}) s
+377 14 M
+(    where) s
+377 6 M
+(        tf0 a0 =) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 6 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (6) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(            let sfbs0 = fmap \(\\sf0 -> \(sfTF sf0\) a0\) sfs0) s
+5 510 M
+(                bs0   = fmap snd sfbs0) s
+5 502 M
+(            in) s
+5 494 M
+(                \(case tfe0 \(a0, bs0\) of) s
+5 486 M
+(                     \(sfe, NoEvent\)  -> dpSwitchAux \(fmap fst sfbs0\) sfe) s
+5 478 M
+(                     \(_,   Event c0\) -> fst \(sfTF \(k sfs0 c0\) a0\),) s
+5 470 M
+(                 bs0\)) s
+5 454 M
+(        dpSwitchAux sfs \(SFConst {sfCVal = NoEvent}\) = parAux sfs) s
+5 446 M
+(        dpSwitchAux sfs sfe = SFTIVar {sfTF' = tf}) s
+5 438 M
+(            where) s
+5 430 M
+(                tf dt a =) s
+5 422 M
+(                    let sfbs' = fmap \(\\sf -> \(sfTF' sf\) dt a\) sfs) s
+5 414 M
+(                        bs    = fmap snd sfbs') s
+5 406 M
+(                    in) s
+5 398 M
+(                        \(case \(sfTF' sfe\) dt \(a, bs\) of) s
+5 390 M
+(                             \(sfe', NoEvent\) -> dpSwitchAux \(fmap fst sfbs'\)) s
+5 382 M
+(                                                            sfe') s
+5 374 M
+(                             \(_,    Event c\) -> fst \(sfTF \(k \(freezeCol sfs dt\)) s
+5 366 M
+(                                                             c\)) s
+5 358 M
+(                                                          a\),) s
+5 350 M
+(                         bs\)) s
+5 326 M
+(-- Recurring parallel switch.) s
+5 318 M
+(-- \(Unclear if possible to derive from pSwitch, but the definition would in) s
+5 310 M
+(-- any case be complicated.\)) s
+5 302 M
+(rpSwitch :: Functor col =>) s
+5 294 M
+(    col \(SF a b\) -> SF \(a, Event \(col \(SF a b\) -> col \(SF a b\)\)\) \(col b\)) s
+5 286 M
+(rpSwitch sfs0 = SF {sfTF = tf0}) s
+5 278 M
+(    where) s
+5 270 M
+(        tf0 \(a0, ef0\) = ) s
+5 262 M
+(            let sfs0' = case ef0 of) s
+5 254 M
+(                            NoEvent  -> sfs0) s
+5 246 M
+(                            Event f0 -> f0 sfs0) s
+5 238 M
+(                sfbs0 = fmap \(\\sf0 -> sfTF sf0 a0\) sfs0') s
+5 230 M
+(                sfs   = fmap fst sfbs0) s
+5 222 M
+(                bs0   = fmap snd sfbs0) s
+5 214 M
+(            in) s
+5 206 M
+(                \(rpSwitchAux sfs, bs0\)) s
+5 190 M
+(        rpSwitchAux sfs = SFTIVar {sfTF' = tf}) s
+5 182 M
+(            where) s
+5 174 M
+(                tf dt \(a, ef\) =) s
+5 166 M
+(                    let sfbs = case ef of) s
+5 158 M
+(                                   NoEvent -> fmap \(\\sf -> sfTF' sf dt a\) sfs) s
+5 150 M
+(                                   Event f -> fmap \(\\sf -> sfTF sf a\)) s
+5 142 M
+(                                                   \(f \(freezeCol sfs dt\)\)) s
+5 134 M
+(                        sfs' = fmap fst sfbs) s
+5 126 M
+(                        bs   = fmap snd sfbs) s
+5 118 M
+(                    in) s
+5 110 M
+(                        \(rpSwitchAux sfs', bs\)) s
+5 86 M
+(-- Recurring parallel switch with delayed observation \(aka. the DARPA switch!\)) s
+5 78 M
+(drpSwitch :: Functor col =>) s
+5 70 M
+(    col \(SF a b\) -> SF \(a, Event \(col \(SF a b\) -> col \(SF a b\)\)\) \(col b\)) s
+5 62 M
+(drpSwitch sfs0 = SF {sfTF = tf0}) s
+5 54 M
+(    where) s
+5 46 M
+(        tf0 \(a0, ef0\) = ) s
+5 38 M
+(            let sfbs0 = fmap \(\\sf0 -> sfTF sf0 a0\) sfs0) s
+5 30 M
+(                bs0   = fmap snd sfbs0) s
+5 22 M
+(            in) s
+5 14 M
+(                \(case ef0 of) s
+5 6 M
+(                     NoEvent  -> drpSwitchAux \(fmap fst sfbs0\)) s
+377 518 M
+(                     Event f0 -> drpSwitchAux \(fmap fst) s
+377 510 M
+(                                                    \(fmap \(\\sf0 -> sfTF sf0 a0\)) s
+377 502 M
+(                                                          \(f0 sfs0\)\)\),) s
+377 494 M
+(                 bs0\)) s
+377 478 M
+(        drpSwitchAux sfs = SFTIVar {sfTF' = tf}) s
+377 470 M
+(            where) s
+377 462 M
+(                tf dt \(a, ef\) =) s
+377 454 M
+(                    let sfbs = fmap \(\\sf -> sfTF' sf dt a\) sfs) s
+377 446 M
+(                        bs   = fmap snd sfbs) s
+377 438 M
+(                    in) s
+377 430 M
+(                        \(case ef of) s
+377 422 M
+(                             NoEvent -> drpSwitchAux \(fmap fst sfbs\)) s
+377 414 M
+(                             Event f ->) s
+377 406 M
+(                                 let sfs' = f \(freezeCol sfs dt\)) s
+377 398 M
+(                                 in) s
+377 390 M
+(                                     drpSwitchAux \(fmap fst) s
+377 382 M
+(                                                        \(fmap \(\\sf->sfTF sf a\)) s
+377 374 M
+(                                                              sfs'\)\),) s
+377 366 M
+(                         bs\)) s
+377 342 M
+(------------------------------------------------------------------------------) s
+377 334 M
+(-- Wave-form generation) s
+377 326 M
+(------------------------------------------------------------------------------) s
+377 310 M
+(-- Zero-order hold.) s
+377 302 M
+(hold :: a -> SF \(Event a\) a) s
+377 294 M
+(hold a0 = switch \(arr dup >>> first \(constant a0\)\) hold') s
+377 286 M
+(    where) s
+377 278 M
+(        hold' a = switch \(constant a &&& notYet\) hold') s
+377 254 M
+(-- Delayed zero-order hold.) s
+377 246 M
+(-- !!! Actually, since we're switching into a stateless signal function,) s
+377 238 M
+(-- !!! this is just \(hold a0 >>> delay a0\).) s
+377 230 M
+(-- !!! So why do we have dHold???) s
+377 222 M
+(dHold a0 = dSwitch \(arr dup >>> first \(constant a0\)\) dHold') s
+377 214 M
+(    where) s
+377 206 M
+(        dHold' a = dSwitch \(constant a &&& notYet\) dHold') s
+377 182 M
+(-- Tracks input signal when available, holds last value when disappears.) s
+377 174 M
+(trackAndHold :: a -> SF \(Maybe a\) a) s
+377 166 M
+(trackAndHold a = arr \(maybe NoEvent Event\) >>> hold a) s
+377 142 M
+(-- Similar to trackAndHold, but using a delayed hold:) s
+377 134 M
+(-- !!! Actually, this is just \(trackAndHold a0 >>> delay a0\).) s
+377 126 M
+(dTrackAndHold :: a -> SF \(Maybe a\) a) s
+377 118 M
+(dTrackAndHold a = arr \(maybe NoEvent Event\) >>> dHold a) s
+377 94 M
+(------------------------------------------------------------------------------) s
+377 86 M
+(-- Accumulators) s
+377 78 M
+(------------------------------------------------------------------------------) s
+377 62 M
+(accum :: a -> SF \(Event \(a -> a\)\) \(Event a\)) s
+377 54 M
+(accum = accumBy \(flip \($\)\)) s
+377 30 M
+(-- Identity: accumBy f = accumFilter \(\\b a -> let b' = f b a in \(b',Just b'\)\)) s
+377 22 M
+(accumBy :: \(b -> a -> b\) -> b -> SF \(Event a\) \(Event b\)) s
+377 14 M
+(accumBy f b_init = SF {sfTF = tf0}) s
+377 6 M
+(    where) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 7 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (7) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(        tf0 NoEvent    = \(abAux b_init, NoEvent\) ) s
+5 510 M
+(        tf0 \(Event a0\) = let b' = f b_init a0) s
+5 502 M
+(                         in \(abAux b', Event b'\)) s
+5 486 M
+(        abAux b = SFTIVar {sfTF' = tf}) s
+5 478 M
+(            where) s
+5 470 M
+(                tf _ NoEvent   = \(abAux b, NoEvent\)) s
+5 462 M
+(                tf _ \(Event a\) = let b' = f b a) s
+5 454 M
+(                                 in \(abAux b', Event b'\)) s
+5 430 M
+(accumFilter :: \(c -> a -> \(c, Maybe b\)\) -> c -> SF \(Event a\) \(Event b\)) s
+5 422 M
+(accumFilter f c_init = SF {sfTF = tf0}) s
+5 414 M
+(    where) s
+5 406 M
+(        tf0 NoEvent    = \(afAux c_init, NoEvent\) ) s
+5 398 M
+(        tf0 \(Event a0\) = case f c_init a0 of) s
+5 390 M
+(                             \(c', Nothing\) -> \(afAux c', NoEvent\)) s
+5 382 M
+(                             \(c', Just b0\) -> \(afAux c', Event b0\)) s
+5 366 M
+(        afAux c = SFTIVar {sfTF' = tf}) s
+5 358 M
+(            where) s
+5 350 M
+(                tf _ NoEvent   = \(afAux c, NoEvent\)) s
+5 342 M
+(                tf _ \(Event a\) = case f c a of) s
+5 334 M
+(                                     \(c', Nothing\) -> \(afAux c', NoEvent\)) s
+5 326 M
+(                                     \(c', Just b\)  -> \(afAux c', Event b\)) s
+5 302 M
+(count :: Integral b => SF \(Event a\) \(Event b\)) s
+5 294 M
+(count = accumBy \(\\n _ -> n + 1\) 0) s
+5 270 M
+(------------------------------------------------------------------------------) s
+5 262 M
+(-- Delay) s
+5 254 M
+(------------------------------------------------------------------------------) s
+5 238 M
+(-- Consider changing name to pre?) s
+5 230 M
+(delay :: a -> SF a a) s
+5 222 M
+(delay a_init = SF {sfTF = tf0}) s
+5 214 M
+(    where) s
+5 206 M
+(        tf0 a0 = \(delayAux a0, a_init\)) s
+5 190 M
+(        delayAux a_prev = SFTIVar {sfTF' = tf}) s
+5 182 M
+(            where) s
+5 174 M
+(                tf dt a = \(delayAux a, a_prev\)) s
+5 150 M
+(------------------------------------------------------------------------------) s
+5 142 M
+(-- Integral) s
+5 134 M
+(------------------------------------------------------------------------------) s
+5 118 M
+(-- Integration using the rectangle rule.) s
+5 110 M
+(integral :: Fractional a => SF a a) s
+5 102 M
+(integral = SF {sfTF = tf0}) s
+5 94 M
+(    where) s
+5 86 M
+(        igrl0  = 0.0) s
+5 70 M
+(        tf0 a0 = \(integralAux igrl0 a0, igrl0\)) s
+5 54 M
+(        integralAux igrl a_prev = SFTIVar {sfTF' = tf}) s
+5 46 M
+(            where) s
+5 38 M
+(                tf dt a = \(integralAux igrl' a, igrl'\)) s
+5 30 M
+(                    where) s
+5 22 M
+(                       igrl' = igrl + a_prev * realToFrac dt) s
+377 518 M
+(------------------------------------------------------------------------------) s
+377 510 M
+(-- Loops with guaranteed well-defined feedback) s
+377 502 M
+(------------------------------------------------------------------------------) s
+377 486 M
+(loopDelay :: c -> SF \(a,c\) \(b,c\) -> SF a b) s
+377 478 M
+(loopDelay = undefined) s
+377 462 M
+(loopIntegral :: Fractional c => SF \(a,c\) \(b,c\) -> SF a b) s
+377 454 M
+(loopIntegral = undefined) s
+377 430 M
+(------------------------------------------------------------------------------) s
+377 422 M
+(-- Reactimation) s
+377 414 M
+(------------------------------------------------------------------------------) s
+377 398 M
+(-- Reactimation of a signal function.) s
+377 390 M
+(-- init ....... IO action for initialization. Will only be invoked once,) s
+377 382 M
+(--              at \(logical\) time 0, before first call to "sense".) s
+377 374 M
+(--              Expected to return the value of input at time 0.) s
+377 366 M
+(-- sense ...... IO action for sensing of system input.) s
+377 358 M
+(--      arg. #1 ....... True: action may block, waiting for an OS event.) s
+377 350 M
+(--                      False: action must not block.) s
+377 342 M
+(--      res. #1 ....... Time interval since previous invocation of the sensing) s
+377 334 M
+(--                      action \(or, the first time round, the init action\),) s
+377 326 M
+(--                      returned. The interval must be _strictly_ greater) s
+377 318 M
+(--                      than 0. Thus even a non-blocking invocation must) s
+377 310 M
+(--                      ensure that time progresses.) s
+377 302 M
+(--      res. #2 ....... Nothing: input is unchanged w.r.t. the previously) s
+377 294 M
+(--                      returned input sample.) s
+377 286 M
+(--                      Just i: the input is currently i.) s
+377 278 M
+(--                      It is OK to always return "Just", even if input is) s
+377 270 M
+(--                      unchanged.) s
+377 262 M
+(-- actuate .... IO action for outputting the system output.) s
+377 254 M
+(--      arg. #1 ....... True: output may have changed from previous output) s
+377 246 M
+(--                      sample.) s
+377 238 M
+(--                      False: output is definitely unchanged from previous) s
+377 230 M
+(--                      output sample.) s
+377 222 M
+(--                      It is OK to ignore argument #1 and assume that the) s
+377 214 M
+(--                      the output has always changed.) s
+377 206 M
+(--      arg. #2 ....... Current output sample.) s
+377 198 M
+(--      result .......  Termination flag. Once True, reactimate will exit) s
+377 190 M
+(--                      the reactimation loop and return to its caller.) s
+377 182 M
+(-- sf ......... Signal function to reactimate.) s
+377 166 M
+(reactimate :: IO a) s
+377 158 M
+(              -> \(Bool -> IO \(DTime, Maybe a\)\)) s
+377 150 M
+(              -> \(Bool -> b -> IO Bool\)) s
+377 142 M
+(              -> SF a b) s
+377 134 M
+(              -> IO \(\)) s
+377 126 M
+(reactimate init sense actuate \(SF {sfTF = tf0}\) =) s
+377 118 M
+(    do) s
+377 110 M
+(        a0 <- init) s
+377 102 M
+(        let \(sf, b0\) = tf0 a0) s
+377 94 M
+(        loop sf a0 b0) s
+377 86 M
+(    where) s
+377 78 M
+(        loop sf a b = do) s
+377 70 M
+(            done <- actuate True b) s
+377 62 M
+(            unless \(a `seq` b `seq` done\) $ do) s
+377 54 M
+(                \(dt, ma'\) <- sense False) s
+377 46 M
+(                let a' = maybe a id ma') s
+377 38 M
+(                    \(sf', b'\) = \(sfTF' sf\) dt a') s
+377 30 M
+(                loop sf' a' b') s
+377 6 M
+(------------------------------------------------------------------------------) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+90 rotate
+24 -588 translate
+/pagenum 8 def
+/fname (AFRP.hs) def
+/fdir () def
+/ftail (AFRP.hs) def
+% User defined strings:
+/pagenumstr (8) def
+/moddatestr (04/30/02) def
+/modtimestr (19:29:46) def
+/user_header_p false def
+%%EndPageSetup
+column_lines
+do_header
+5 518 M
+(-- Embedding) s
+5 510 M
+(------------------------------------------------------------------------------) s
+5 494 M
+(-- New embed interface. We will probably have to revisit this. To run an) s
+5 486 M
+(-- embedded signal function while retaining full control \(e.g. start and) s
+5 478 M
+(-- stop at will\), one would probably need a continuation based interface) s
+5 470 M
+(-- \(as well as a continuation based underlying implementation\).) s
+5 462 M
+(--) s
+5 454 M
+(-- E.g. here are interesting alternative \(or maybe complementary\)) s
+5 446 M
+(-- signatures:) s
+5 438 M
+(--) s
+5 430 M
+(--    sample :: SF a b -> SF \(Event a\) \(Event b\)) s
+5 422 M
+(--    sample' :: SF a b -> SF \(Event \(DTime, a\)\) \(Event b\)) s
+5 406 M
+(embed :: SF a b -> \(a, [\(DTime, Maybe a\)]\) -> [b]) s
+5 398 M
+(embed sf0 \(a0, dtas\) = b0 : loop a0 sf dtas) s
+5 390 M
+(    where) s
+5 382 M
+(        \(sf, b0\) = \(sfTF sf0\) a0) s
+5 366 M
+(        loop a_prev sf [] = []) s
+5 358 M
+(        loop a_prev sf \(\(dt, ma\) : dtas\) =) s
+5 350 M
+(            b : \(a `seq` b `seq` \(loop a sf' dtas\)\)) s
+5 342 M
+(            where) s
+5 334 M
+(                a        = maybe a_prev id ma) s
+5 326 M
+(                \(sf', b\) = \(sfTF' sf\) dt a) s
+5 302 M
+(deltaEncode :: Eq a => DTime -> [a] -> \(a, [\(DTime, Maybe a\)]\)) s
+5 294 M
+(deltaEncode _  []        = afrpErr "deltaEncode" "Empty input list.") s
+5 286 M
+(deltaEncode dt aas@\(_:_\) = deltaEncodeBy \(==\) dt aas) s
+5 262 M
+(deltaEncodeBy :: \(a -> a -> Bool\) -> DTime -> [a] -> \(a, [\(DTime, Maybe a\)]\)) s
+5 254 M
+(deltaEncodeBy _  _  []        = afrpErr "deltaEncodeBy" "Empty input list.") s
+5 246 M
+(deltaEncodeBy eq dt \(a0 : as\) = \(a0, zip \(repeat dt\) \(debAux a0 as\)\)) s
+5 238 M
+(    where) s
+5 230 M
+(        debAux a_prev []                     = []) s
+5 222 M
+(        debAux a_prev \(a:as\) | a `eq` a_prev = Nothing : debAux a as) s
+5 214 M
+(                             | otherwise     = Just a  : debAux a as ) s
+_R
+S
+%%Trailer
+%%Pages: 8
+%%DocumentNeededResources: font Times-Roman Courier-Bold Courier 
+%%+ font Times-Bold 
+%%EOF
