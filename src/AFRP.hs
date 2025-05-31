@@ -1,3 +1,8 @@
+{-# LANGUAGE NPlusKPatterns #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {- $Id: AFRP.hs,v 1.37 2004/03/22 19:46:40 antony Exp $
 ******************************************************************************
 *                                  A F R P                                   *
@@ -252,16 +257,16 @@ module AFRP (
 			--    -> (a, [(DTime, Maybe a)])
 ) where
 
-import Monad (unless)
-import Random (RandomGen(..), Random(..), randoms, randomRs)
-
+import Prelude
+import Control.Monad (unless)
+import System.Random (RandomGen(..), Random(..), randoms, randomRs)
 import Control.Arrow
+import Control.Category
 import AFRPDiagnostics
 import AFRPMiscellany (( # ), dup, swap)
 import AFRPEvent
 import AFRPVectorSpace
-
-import IORef
+import Data.IORef
 
 infixr 0 -->, >--, -=>, >=-
 
@@ -334,7 +339,7 @@ sfNever = sfConst NoEvent
 sfId :: SF' a a
 sfId = sf
     where
-	sf = SFArr {sfTF' = \_ a -> (sf, a), sfAFun = id}
+	sf = SFArr {sfTF' = \_ a -> (sf, a), sfAFun = Prelude.id}
 
 
 sfArr :: (a -> b) -> SF' a b
@@ -354,12 +359,20 @@ freezeCol sfs dt = fmap (flip freeze dt) sfs
 
 
 ------------------------------------------------------------------------------
+-- Category instance and implementation
+------------------------------------------------------------------------------
+
+instance Category SF where
+    id = identity
+    (.) = flip compPrim -- compPrim is (>>>)
+
+------------------------------------------------------------------------------
 -- Arrow instance and implementation
 ------------------------------------------------------------------------------
 
 instance Arrow SF where
     arr    = arrPrim
-    (>>>)  = compPrim
+    -- (>>>) is now inherited from Category
     first  = firstPrim
     second = secondPrim
     (***)  = parSplitPrim
@@ -406,7 +419,7 @@ compPrim (SF {sfTF = tf10}) (SF {sfTF = tf20}) = SF {sfTF = tf0}
 			(sf2', c) = tf2 dt b
 
 	cpAuxA1 _  (SFConst {sfCVal = c})   = sfConst c
-	cpAuxA1 f1 (SFArr   {sfAFun = f2})  = sfArr (f2 . f1)
+	cpAuxA1 f1 (SFArr   {sfAFun = f2})  = sfArr (f2 Prelude.. f1)
 	cpAuxA1 f1 (SFTIVar {sfTF'  = tf2}) = SFTIVar {sfTF' = tf}
 	    where
 		tf dt a = (cpAuxA1 f1 sf2', c)
@@ -414,7 +427,7 @@ compPrim (SF {sfTF = tf10}) (SF {sfTF = tf20}) = SF {sfTF = tf0}
 			(sf2', c) = tf2 dt (f1 a)
 
 	cpAuxA2 (SFConst {sfCVal = b})   f2 = sfConst (f2 b)
-	cpAuxA2 (SFArr   {sfAFun = f1})  f2 = sfArr (f2 . f1)
+	cpAuxA2 (SFArr   {sfAFun = f1})  f2 = sfArr (f2 Prelude.. f1)
 	cpAuxA2 (SFTIVar {sfTF'  = tf1}) f2 = SFTIVar {sfTF' = tf}
 	    where
 		tf dt a = (cpAuxA2 sf1' f2, f2 b)
@@ -880,7 +893,7 @@ dSwitch (SF {sfTF = tf10}) k = SF {sfTF = tf0}
 
 -- Recurring switch.
 rSwitch :: SF a b -> SF (a, Event (SF a b)) b
-rSwitch sf = switch (first sf) ((noEventSnd >=-) . rSwitch)
+rSwitch sf = switch (first sf) ((noEventSnd >=-) Prelude.. rSwitch)
 
 {-
 -- Old version. New is more efficient. Which one is clearer?
@@ -893,7 +906,7 @@ rSwitch sf = switch (first sf) rSwitch'
 
 -- Recurring switch with delayed observation.
 drSwitch :: SF a b -> SF (a, Event (SF a b)) b
-drSwitch sf = dSwitch (first sf) ((noEventSnd >=-) . drSwitch)
+drSwitch sf = dSwitch (first sf) ((noEventSnd >=-) Prelude.. drSwitch)
 
 {-
 -- Old version. New is more efficient. Which one is clearer?
@@ -1125,7 +1138,7 @@ rpSwitch :: Functor col =>
     (forall sf . (a -> col sf -> col (b, sf)))
     -> col (SF b c) -> SF (a, Event (col (SF b c) -> col (SF b c))) (col c)
 rpSwitch rf sfs =
-    pSwitch (rf . fst) sfs (arr (snd . fst)) $ \sfs' f ->
+    pSwitch (rf Prelude.. fst) sfs (arr (snd Prelude.. fst)) $ \sfs' f ->
     noEventSnd >=- rpSwitch rf (f sfs')
 
 
@@ -1142,7 +1155,7 @@ drpSwitch :: Functor col =>
     (forall sf . (a -> col sf -> col (b, sf)))
     -> col (SF b c) -> SF (a, Event (col (SF b c) -> col (SF b c))) (col c)
 drpSwitch rf sfs =
-    dpSwitch (rf . fst) sfs (arr (snd . fst)) $ \sfs' f ->
+    dpSwitch (rf Prelude.. fst) sfs (arr (snd Prelude.. fst)) $ \sfs' f ->
     noEventSnd >=- drpSwitch rf (f sfs')
 
 {-
@@ -1158,7 +1171,7 @@ drpSwitch rf sfs = dpSwitch (rf . fst) sfs (arr (snd . fst)) k
 
 -- Zero-order hold.
 hold :: a -> SF (Event a) a
-hold a_init = switch (constant a_init &&& identity) ((NoEvent >--) . hold)
+hold a_init = switch (constant a_init &&& identity) ((NoEvent >--) Prelude.. hold)
 
 
 -- Tracks input signal when available, holds last value when disappears.
@@ -1419,7 +1432,7 @@ reactimate init sense actuate (SF {sfTF = tf0}) =
 	    done <- actuate True b
             unless (a `seq` b `seq` done) $ do
 	        (dt, ma') <- sense False
-		let a' = maybe a id ma'
+		let a' = maybe a Prelude.id ma'
                     (sf', b') = (sfTF' sf) dt a'
 		loop sf' a' b'
 
@@ -1460,7 +1473,7 @@ react rh (dt,ma') =
 	             rsSF = sf,
 		     rsA = a,
 		     rsB = b }) <- readIORef rh
-     let a' = maybe a id ma'
+     let a' = maybe a Prelude.id ma'
          (sf',b') = (sfTF' sf) dt a'
      writeIORef rh (rs {rsSF = sf',rsA = a',rsB = b'})
      done <- actuate rh True b'
@@ -1491,7 +1504,7 @@ embed sf0 (a0, dtas) = b0 : loop a0 sf dtas
 	loop a_prev sf ((dt, ma) : dtas) =
 	    b : (a `seq` b `seq` (loop a sf' dtas))
 	    where
-		a        = maybe a_prev id ma
+		a        = maybe a_prev Prelude.id ma
 	        (sf', b) = (sfTF' sf) dt a
 
 

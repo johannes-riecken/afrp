@@ -1,3 +1,5 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {- $Id: AFRPAffineSpace.hs,v 1.2 2003/11/10 21:28:58 antony Exp $
 ******************************************************************************
 *                                  A F R P                                   *

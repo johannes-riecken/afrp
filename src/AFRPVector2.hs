@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {- $Id: AFRPVector2.hs,v 1.5 2004/03/22 19:46:40 antony Exp $
 ******************************************************************************
 *                                  A F R P                                   *
