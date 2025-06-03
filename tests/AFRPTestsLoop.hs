@@ -2,17 +2,17 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:         AFRPTestsLoop					     *
-*       Purpose:        Test cases for loop				     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Module:         AFRPTestsLoop                                        *
+*       Purpose:        Test cases for loop                                  *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
 ******************************************************************************
 -}
 
-module AFRPTestsLoop (loop_trs, loop_tr, loop_st0, loop_st0r, 
-		      loop_st1, loop_st1r) where
+module AFRPTestsLoop (loop_trs, loop_tr, loop_st0, loop_st0r,
+                      loop_st1, loop_st1r) where
 
 import AFRP
 
@@ -27,7 +27,7 @@ loop_acc = arr (\(x, y)->(x+y, x+y))
 
 loop_t0 :: [Double]
 loop_t0 = testSF1 (loop (constant (42.0, 43.0)))
-loop_t0r = 
+loop_t0r =
     [42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0,
      42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0, 42.0,
      42.0, 42.0, 42.0, 42.0, 42.0]
@@ -62,7 +62,7 @@ loop_t3r =
 loop_t4 :: [Double]
 loop_t4 = testSF1 (loop (second (iPre 0) >>> loop_acc))
 loop_t4r =
-    [0.0,   1.0,   3.0,   6.0,   10.0, 
+    [0.0,   1.0,   3.0,   6.0,   10.0,
      15.0,  21.0,  28.0,  36.0,  45.0,
      55.0,  66.0,  78.0,  91.0,  105.0,
      120.0, 136.0, 153.0, 171.0, 190.0,
@@ -71,7 +71,7 @@ loop_t4r =
 loop_t5 :: [Double]
 loop_t5 = testSF2 (loop (second (iPre 0) >>> loop_acc))
 loop_t5r =
-    [0.0,  0.0,  0.0,  0.0,  0.0, 
+    [0.0,  0.0,  0.0,  0.0,  0.0,
      1.0,  2.0,  3.0,  4.0,  5.0,
      7.0,  9.0,  11.0, 13.0, 15.0,
      18.0, 21.0, 24.0, 27.0, 30.0,
@@ -124,30 +124,30 @@ loop_t12r = loop_t9r
 loop_t13 :: [Double]
 loop_t13 =
     let
-	es = embed (loop (second integral >>> arr (\(_, x) -> (x + 1, x + 1))))
+        es = embed (loop (second integral >>> arr (\(_, x) -> (x + 1, x + 1))))
                    (deltaEncode 0.001 (repeat ()))
     in
-	[es!!0, es!!1000, es!!2000, es!!3000, es!!4000, es!!5000]
+        [es!!0, es!!1000, es!!2000, es!!3000, es!!4000, es!!5000]
 loop_t13r = [1.0,2.71692, 7.38167, 20.05544, 54.48911, 148.04276]
 
 loop_t14 :: [Double]
 loop_t14 =
     let
-	es = embed (loop (arr (\(_, x) -> (x + 1, x + 1)) >>> second integral))
+        es = embed (loop (arr (\(_, x) -> (x + 1, x + 1)) >>> second integral))
                    (deltaEncode 0.001 (repeat ()))
     in
-	[es!!0, es!!1000, es!!2000, es!!3000, es!!4000, es!!5000]
+        [es!!0, es!!1000, es!!2000, es!!3000, es!!4000, es!!5000]
 loop_t14r = loop_t13r
 
 loop_t15 :: [Double]
 loop_t15 =
     let
-	es = embed (loop (arr (\(_, x) -> (x + 1, x + 1))
+        es = embed (loop (arr (\(_, x) -> (x + 1, x + 1))
                           >>> second integral
-			  >>> identity))
+                          >>> identity))
                    (deltaEncode 0.001 (repeat ()))
     in
-	[es!!0, es!!1000, es!!2000, es!!3000, es!!4000, es!!5000]
+        [es!!0, es!!1000, es!!2000, es!!3000, es!!4000, es!!5000]
 loop_t15r = loop_t13r
 
 -- A generator for factorial:  The least-fixed point of this function is
@@ -194,7 +194,7 @@ loop_trs =
 loop_tr = and loop_trs
 
 loop_st0 = testSFSpaceLeak 2000000
-			   (loop (second (iPre 0) >>> loop_acc))
+                           (loop (second (iPre 0) >>> loop_acc))
 loop_st0r = 9.999995e11
 
 -- A simple loop test taken from MiniYampa:

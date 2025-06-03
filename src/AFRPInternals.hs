@@ -4,8 +4,8 @@
 *                                                                            *
 *       Module:         AFRPInternals                                        *
 *       Purpose:        An interface giving access to some of the internal   *
-*			details of the AFRP implementation.		     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*                       details of the AFRP implementation.                  *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -19,7 +19,7 @@
 -- insulated against such changes.
 
 module AFRPInternals (
-    Event(..)		-- The event type, its constructors, and instances.
+    Event(..)           -- The event type, its constructors, and instances.
 ) where
 
 import AFRPEvent
@@ -32,6 +32,6 @@ import AFRPEvent
 instance Show a => Show (Event a) where
     showsPrec d NoEvent   = showString "NoEvent"
     showsPrec d (Event a) = showParen (d >= 10)
-				      (showString "Event " . showsPrec 10 a)
+                                      (showString "Event " . showsPrec 10 a)
 
 

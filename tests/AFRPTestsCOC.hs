@@ -2,9 +2,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:         AFRPTestsCOC					     *
-*       Purpose:        Test cases for collection-oriented combinators	     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Module:         AFRPTestsCOC                                         *
+*       Purpose:        Test cases for collection-oriented combinators       *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

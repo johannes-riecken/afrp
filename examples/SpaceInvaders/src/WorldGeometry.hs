@@ -2,10 +2,10 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		WorldGeometry					     *
-*       Purpose:	Constants and functions defining the geometry of     *
-*			the world.					     *
-*       Author:		Henrik Nilsson					     *
+*       Module:         WorldGeometry                                        *
+*       Purpose:        Constants and functions defining the geometry of     *
+*                       the world.                                           *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -16,7 +16,7 @@ module WorldGeometry where
 
 import AFRPPoint2 (Point2(..))
 import PhysicalDimensions
-import qualified Graphics.HGL.Utils as HGL (Point)
+import qualified Graphics.HGL as HGL (Point)
 
 
 -- Everything in the world is measured in meters.
@@ -25,7 +25,7 @@ pixelsPerMeter :: InvaderReal
 pixelsPerMeter = 0.5
 
 pixelsToMeters :: Int -> Length
-pixelsToMeters p = (fromIntegral p) / pixelsPerMeter 
+pixelsToMeters p = (fromIntegral p) / pixelsPerMeter
 
 metersToPixels :: Length -> Int
 metersToPixels m = round (m * pixelsPerMeter)
@@ -70,15 +70,15 @@ worldWestWall  = worldXMin + 0.2
 
 {-
 pointToPositionT :: Transform2
-pointToPositionT = translate2 (vector2XY worldXMin worldYMax) `compose2` 
-                   uscale2 (1 / pixelsPerMeter) `compose2` 
-                   mirrorY2 
+pointToPositionT = translate2 (vector2XY worldXMin worldYMax) `compose2`
+                   uscale2 (1 / pixelsPerMeter) `compose2`
+                   mirrorY2
 -}
 
 
 gPointToPosition2 :: HGL.Point -> Position2
 gPointToPosition2 (x, y) = (Point2 (pixelsToMeters x + worldXMin)
-				   (worldYMax - pixelsToMeters y))
+                                   (worldYMax - pixelsToMeters y))
 
 
 {-

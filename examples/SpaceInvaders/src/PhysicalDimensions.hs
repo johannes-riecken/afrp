@@ -2,13 +2,13 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*	Module:		PhysicalDimensions				     *
-*	Purpose:	Type synonyms for physical dimensions and some	     *
-*			related operations.				     *
-*	Author:		Henrik Nilsson					     *
+*       Module:         PhysicalDimensions                                   *
+*       Purpose:        Type synonyms for physical dimensions and some       *
+*                       related operations.                                  *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
-*									     *
+*                                                                            *
 ******************************************************************************
 -}
 
@@ -45,10 +45,10 @@ module PhysicalDimensions (
     Acceleration3,
 
 -- Operations
-    normalizeAngle,	-- :: Angle -> Angle
-    normalizeHeading,	-- :: Heading -> Heading
-    bearingToHeading,	-- :: Bearing -> Heading
-    headingToBearing	-- :: Heading -> Bearing
+    normalizeAngle,     -- :: Angle -> Angle
+    normalizeHeading,   -- :: Heading -> Heading
+    bearingToHeading,   -- :: Bearing -> Heading
+    headingToBearing    -- :: Heading -> Bearing
 ) where
 
 import AFRP (Time, DTime)
@@ -72,14 +72,14 @@ type InvaderReal = Time
 type Frequency    = InvaderReal -- [Hz]
 type Mass         = InvaderReal -- [kg]
 type Length       = InvaderReal -- [m]
-type Position     = InvaderReal -- [m]	 (absolute)
-type Distance     = InvaderReal -- [m]	 (relative)
+type Position     = InvaderReal -- [m]   (absolute)
+type Distance     = InvaderReal -- [m]   (relative)
 type Speed        = InvaderReal -- [m/s] (unsigned, speed = abs(velocity))
 type Velocity     = InvaderReal -- [m/s] (signed)
 type Acceleration = InvaderReal -- [m/s^2]
 type Angle        = InvaderReal -- [rad] (relative)
 type Heading      = InvaderReal -- [rad] (angle relative to x-axis = east)
-type Bearing	  = InvaderReal -- [deg] (compass direction, 0 = N, 90 = E)
+type Bearing      = InvaderReal -- [deg] (compass direction, 0 = N, 90 = E)
 type RotVel       = InvaderReal -- [rad/s]
 type RotAcc       = InvaderReal -- [rad/s^2]
 
@@ -88,20 +88,20 @@ type RotAcc       = InvaderReal -- [rad/s^2]
 -- Two-dimensional types
 ------------------------------------------------------------------------------
 
-type Position2     = Point2 Position			-- [m]     (absolute)
-type Distance2     = Vector2 Distance			-- [m]     (relative)
-type Velocity2     = Vector2 Velocity			-- [m/s]
-type Acceleration2 = Vector2 Acceleration		-- [m/s^2]
+type Position2     = Point2 Position                    -- [m]     (absolute)
+type Distance2     = Vector2 Distance                   -- [m]     (relative)
+type Velocity2     = Vector2 Velocity                   -- [m/s]
+type Acceleration2 = Vector2 Acceleration               -- [m/s^2]
 
 
 ------------------------------------------------------------------------------
 -- Three-dimensional types
 ------------------------------------------------------------------------------
 
-type Position3     = Point3 Position			-- [m]     (absolute)
-type Distance3     = Vector3 Distance			-- [m]     (relative)
-type Velocity3     = Vector3 Velocity			-- [m/s]
-type Acceleration3 = Vector3 Acceleration		-- [m/s^2]
+type Position3     = Point3 Position                    -- [m]     (absolute)
+type Distance3     = Vector3 Distance                   -- [m]     (relative)
+type Velocity3     = Vector3 Velocity                   -- [m/s]
+type Acceleration3 = Vector3 Acceleration               -- [m/s^2]
 
 
 ------------------------------------------------------------------------------

@@ -4,7 +4,7 @@
 *                                                                            *
 *       Module:         AFRPDiagnostics                                      *
 *       Purpose:        Standardized error-reporting for AFRP                *
-*	Authors:	Henrik Nilsson and Antony Courtney		     *
+*       Authors:        Henrik Nilsson and Antony Courtney                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

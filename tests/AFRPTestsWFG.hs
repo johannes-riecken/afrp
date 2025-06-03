@@ -2,9 +2,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:         AFRPTestsWFG					     *
-*       Purpose:        Test cases for wave-form generation		     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Module:         AFRPTestsWFG                                         *
+*       Purpose:        Test cases for wave-form generation                  *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

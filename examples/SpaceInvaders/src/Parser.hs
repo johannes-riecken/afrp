@@ -2,10 +2,10 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:         Parser						     *
+*       Module:         Parser                                               *
 *       Purpose:        Parsing (mainly lexical analysis) of window event    *
-*			stream.					             *
-*       Author:		Henrik Nilsson					     *
+*                       stream.                                              *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -16,30 +16,30 @@
 -- done better in the new AFRP framework.
 
 module Parser (
-    GameInput,		-- Abstract
-    parseWinInput,	-- :: SF WinInput GameInput
-    command,		-- :: SF GameInput (Event Command)
-    cmdString,		-- :: SF GameInput (Event String)
-    ptrPos,		-- :: SF GameInput Position2
-    lbp,		-- :: SF GameInput (Event ())
-    lbpPos,		-- :: SF GameInput (Event Position2)
-    lbDown,		-- :: SF GameInput Bool
-    rbp,		-- :: SF GameInput (Event ())
-    rbpPos,		-- :: SF GameInput (Event Position2)
-    rbDown,		-- :: SF GameInput Bool
-    dragStart,		-- :: SF GameInput (Event ())
-    dragStop,		-- :: SF GameInput (Event Distance2)
-    dragStartPos,	-- :: SF GameInput Position2
-    dragVec,		-- :: SF GameInput Distance2
-    dragging		-- :: SF GameInput Bool
+    GameInput,          -- Abstract
+    parseWinInput,      -- :: SF WinInput GameInput
+    command,            -- :: SF GameInput (Event Command)
+    cmdString,          -- :: SF GameInput (Event String)
+    ptrPos,             -- :: SF GameInput Position2
+    lbp,                -- :: SF GameInput (Event ())
+    lbpPos,             -- :: SF GameInput (Event Position2)
+    lbDown,             -- :: SF GameInput Bool
+    rbp,                -- :: SF GameInput (Event ())
+    rbpPos,             -- :: SF GameInput (Event Position2)
+    rbDown,             -- :: SF GameInput Bool
+    dragStart,          -- :: SF GameInput (Event ())
+    dragStop,           -- :: SF GameInput (Event Distance2)
+    dragStartPos,       -- :: SF GameInput Position2
+    dragVec,            -- :: SF GameInput Distance2
+    dragging            -- :: SF GameInput Bool
 ) where
 
-import Maybe (isNothing, isJust)
-import qualified Graphics.HGL.Utils as HGL (Event(..))
-import Char (ord, isSpace, isDigit)
+import Data.Maybe (isNothing, isJust)
+import qualified Graphics.HGL as HGL (Event(..))
+import Data.Char (ord, isSpace, isDigit)
 
 import AFRP
-import AFRPUtilities
+import qualified AFRPUtilities as AU
 import AFRPGeometry
 -- import AFRPMiscellany (mapFst)
 
@@ -62,7 +62,7 @@ data GameInput = GameInput {
 parseWinInput :: SF WinInput GameInput
 parseWinInput = wiToCmd &&& wiToPDS
                 >>^ \((cmdStr, cmd), pds) ->
-		        GameInput {giCmdStr = cmdStr, giCmd = cmd, giPDS = pds}
+                        GameInput {giCmdStr = cmdStr, giCmd = cmd, giPDS = pds}
 
 
 -- All event sources below are defined such that they will NOT occur at local
@@ -72,7 +72,7 @@ parseWinInput = wiToCmd &&& wiToPDS
 
 -- A valid command has been read.
 command :: SF GameInput (Event Command)
-command = giCmd ^>> notYet
+command = giCmd AU.^>> notYet
 
 
 -- Continuous parser feed back.
@@ -85,11 +85,11 @@ ptrPos = arr (pdsPos . giPDS)
 
 
 lbp :: SF GameInput (Event ())
-lbp = lbpPos >>^ (`tag` ())
+lbp = lbpPos AU.>>^ (`tag` ())
 
 
 lbpPos :: SF GameInput (Event Position2)
-lbpPos = giPDS # pdsLeft ^>> edgeJust
+lbpPos = giPDS # pdsLeft AU.^>> edgeJust
 
 
 lbDown :: SF GameInput Bool
@@ -97,11 +97,11 @@ lbDown = arr (giPDS # pdsLeft # isJust)
 
 
 rbp :: SF GameInput (Event ())
-rbp = rbpPos >>^ (`tag` ())
+rbp = rbpPos AU.>>^ (`tag` ())
 
 
 rbpPos :: SF GameInput (Event Position2)
-rbpPos = giPDS # pdsRight ^>> edgeJust
+rbpPos = giPDS # pdsRight AU.^>> edgeJust
 
 
 rbDown :: SF GameInput Bool
@@ -109,15 +109,15 @@ rbDown = arr (giPDS # pdsRight # isJust)
 
 
 dragStart :: SF GameInput (Event ())
-dragStart = giPDS # pdsDrag ^>> edgeBy detectStart (Just undefined)
+dragStart = giPDS # pdsDrag AU.^>> edgeBy detectStart (Just undefined)
     where
         detectStart Nothing  (Just _) = Just ()
         detectStart _        _        = Nothing
 
 
 dragStop :: SF GameInput (Event Distance2)
-dragStop = (giPDS # pdsDrag ^>> edgeBy detectStop Nothing) &&& dragVec
-           >>^ \(e, dv) -> e `tag` dv
+dragStop = (giPDS # pdsDrag AU.^>> edgeBy detectStop Nothing) &&& dragVec
+           AU.>>^ \(e, dv) -> e `tag` dv
     where
         detectStop (Just _) Nothing = Just ()
         detectStop _        _       = Nothing
@@ -138,7 +138,7 @@ dragging = arr (giPDS # pdsDrag # isJust)
 
 
 ------------------------------------------------------------------------------
--- Lexical analysis of character input 
+-- Lexical analysis of character input
 ------------------------------------------------------------------------------
 
 -- Currently overkill, but being able to enter multi-character commands
@@ -146,13 +146,13 @@ dragging = arr (giPDS # pdsDrag # isJust)
 
 wiToCmd :: SF WinInput (String, Event Command)
 wiToCmd = arr (mapFilterE selChar)
-          >>> (accumBy scanChar (undefined,scanCmds) >>^ fmap fst >>^ splitE)
+          >>> (accumBy scanChar (undefined,scanCmds) AU.>>^ fmap fst AU.>>^ splitE)
           >>> hold "" *** arr (mapFilterE id)
     where
         scanChar (_, S cont) c = cont c
 
         selChar (HGL.Char {HGL.char=c}) = Just c
-	selChar _	                = Nothing
+        selChar _                       = Nothing
 
 
 -- This ought to be redone. Kont should probably be called Tranition or
@@ -177,11 +177,11 @@ scanCmds :: Scanner
 scanCmds = scanCmd cmds
     where
         cmds =
-	    [ ("q", emitCmd scanCmds CmdQuit), -- Discard inp.?
-	      ("p", emitCmd scanCmds CmdNewGame), 
-	      ("f", emitCmd scanCmds CmdFreeze),
-	      ("r", emitCmd scanCmds CmdResume)
-	    ]
+            [ ("q", emitCmd scanCmds CmdQuit), -- Discard inp.?
+              ("p", emitCmd scanCmds CmdNewGame),
+              ("f", emitCmd scanCmds CmdFreeze),
+              ("r", emitCmd scanCmds CmdResume)
+            ]
 
 
 -- Scan one command.
@@ -189,7 +189,7 @@ scanCmds = scanCmd cmds
 -- prefix is valid. Starts over on first invalid character. Invokes success
 -- continuation on success.
 -- cmds ....... List of pairs of valid command and corresponding success
---		continuation. 
+--              continuation.
 
 scanCmd :: [(String, Cont String)] -> Scanner
 scanCmd cmds = scanSubCmd "" cmds
@@ -201,90 +201,90 @@ scanCmd cmds = scanSubCmd "" cmds
 -- continuation on success.
 -- pfx0 ....... Initial prefix.
 -- cmds ....... List of pairs of valid command and corresponding success
---		continuation. 
+--              continuation.
 
 scanSubCmd :: String -> [(String, Cont String)] -> Scanner
 scanSubCmd pfx0 cmds = S (scHlp pfx0 cmds)
     where
-        -- pfx ........	Command prefix.
-        -- sfxconts ...	Command suffixes paired with success continuations.
+        -- pfx ........ Command prefix.
+        -- sfxconts ... Command suffixes paired with success continuations.
         -- c .......... Input character.
         scHlp pfx sfxconts c =
-	    case c of
-	        '\r' ->
-		    case [ cont | ("", cont) <- sfxconts ] of
-		       []         -> emitPfx (S (scHlp pfx sfxconts)) pfx
-		       (cont : _) -> cont pfx
-		'.'  ->
-		    case sfxconts of
-		        []            -> emitPfx (S (scHlp pfx0 cmds)) pfx0
-			[(sfx, cont)] -> cont (pfx ++ sfx)
-			_             ->
-			    let
-			        (sfxs, conts) = unzip sfxconts
-				cpfx          = foldr1 lcp sfxs
-				sfxs'         = map (drop (length cpfx)) sfxs
-				pfx'	      = pfx ++ cpfx
-				sfxconts'     = zip sfxs' conts
-			    in
-			        emitPfx (S (scHlp pfx' sfxconts')) pfx'
-		_    ->
-		    let
-		        pfx' = pfx ++ [c]
-			sfxconts' = [ (tail sfx, cont)
-			            | (sfx, cont) <- sfxconts,
-				      not (null sfx) && head sfx == c
-				    ]
-		    in
-		        case sfxconts' of
-			    []           -> emitPfx (S (scHlp pfx0 cmds))
-						    pfx0
-						    -- ("Invalid: " ++ [c])
-			    [("", cont)] -> cont pfx'
-			    _            -> emitPfx (S (scHlp pfx' sfxconts'))
-						    pfx'
+            case c of
+                '\r' ->
+                    case [ cont | ("", cont) <- sfxconts ] of
+                       []         -> emitPfx (S (scHlp pfx sfxconts)) pfx
+                       (cont : _) -> cont pfx
+                '.'  ->
+                    case sfxconts of
+                        []            -> emitPfx (S (scHlp pfx0 cmds)) pfx0
+                        [(sfx, cont)] -> cont (pfx ++ sfx)
+                        _             ->
+                            let
+                                (sfxs, conts) = unzip sfxconts
+                                cpfx          = foldr1 lcp sfxs
+                                sfxs'         = map (drop (length cpfx)) sfxs
+                                pfx'          = pfx ++ cpfx
+                                sfxconts'     = zip sfxs' conts
+                            in
+                                emitPfx (S (scHlp pfx' sfxconts')) pfx'
+                _    ->
+                    let
+                        pfx' = pfx ++ [c]
+                        sfxconts' = [ (tail sfx, cont)
+                                    | (sfx, cont) <- sfxconts,
+                                      not (null sfx) && head sfx == c
+                                    ]
+                    in
+                        case sfxconts' of
+                            []           -> emitPfx (S (scHlp pfx0 cmds))
+                                                    pfx0
+                                                    -- ("Invalid: " ++ [c])
+                            [("", cont)] -> cont pfx'
+                            _            -> emitPfx (S (scHlp pfx' sfxconts'))
+                                                    pfx'
 
 
 -- Scan fixed-length integer argument.
--- pfx0 .......	Initial prefix (command scanned thus far).
--- n0 .........	Maximal number of digits.
--- cont .......	Continuation: will be passed the new prefix and the
---		integer value of the scanned argument.
+-- pfx0 ....... Initial prefix (command scanned thus far).
+-- n0 ......... Maximal number of digits.
+-- cont ....... Continuation: will be passed the new prefix and the
+--              integer value of the scanned argument.
 
 scanIntegerArg :: String -> Int -> Cont (String,Integer) -> Scanner
 scanIntegerArg pfx0 n0 cont | n0 > 0 = S (siaHlp (pfx0 ++ " ") n0 0)
     where
         siaHlp pfx n a c =
-	    if c == '\r' then
-	        cont (pfx, a)
-	    else if isDigit c then
-	        let a'   = a * 10 + fromIntegral (ord c - ord '0')
-		    pfx' = pfx ++ [c]
-		in
-		    if n > 1 then
-		        emitPfx (S (siaHlp pfx' (n - 1) a')) pfx'
-		    else
-			cont (pfx', a')
-	    else
-	        emitPfx (S (siaHlp (pfx0 ++ " ") n0 0)) pfx0
+            if c == '\r' then
+                cont (pfx, a)
+            else if isDigit c then
+                let a'   = a * 10 + fromIntegral (ord c - ord '0')
+                    pfx' = pfx ++ [c]
+                in
+                    if n > 1 then
+                        emitPfx (S (siaHlp pfx' (n - 1) a')) pfx'
+                    else
+                        cont (pfx', a')
+            else
+                emitPfx (S (siaHlp (pfx0 ++ " ") n0 0)) pfx0
 
 
 -- Scan variable-length string argument.
--- pfx0 .......	Initial prefix (command scanned thus far).
--- cont .......	Continuation: will be passed the new prefix and the
---		string value of the scanned argument.
+-- pfx0 ....... Initial prefix (command scanned thus far).
+-- cont ....... Continuation: will be passed the new prefix and the
+--              string value of the scanned argument.
 
 scanStringArg :: String -> Cont (String,String) -> Scanner
 scanStringArg pfx0 cont = S (ssaHlp (pfx0 ++ " ") "")
     where
         ssaHlp pfx a c =
-	    if c == '\r' then
-	        cont (pfx, a)
-	    else
-	        let a'   = dropWhile isSpace $ a ++ [c]
-		    pfx' = pfx ++ [c]
-		in
-		    emitPfx (S (ssaHlp pfx' a')) pfx'
+            if c == '\r' then
+                cont (pfx, a)
+            else
+                let a'   = dropWhile isSpace $ a ++ [c]
+                    pfx' = pfx ++ [c]
+                in
+                    emitPfx (S (ssaHlp pfx' a')) pfx'
 
 
 -- Emit command (and command string), then continue scanning.
@@ -307,70 +307,70 @@ emitPfx scanner pfx = ((pfx, Nothing), scanner)
 
 
 data PDState = PDState {
-    pdsPos          :: Position2,		-- Current position.
-    pdsDragStartPos :: Position2,		-- (Last) drag start position.
-    pdsDragVec      :: Distance2,		-- (Latest) drag vector.
-    pdsLeft         :: Maybe Position2,		-- Left button currently down.
-    pdsRight        :: Maybe Position2,		-- Right button currently down.
-    pdsDrag         :: Maybe Position2		-- Currently dragging.
+    pdsPos          :: Position2,               -- Current position.
+    pdsDragStartPos :: Position2,               -- (Last) drag start position.
+    pdsDragVec      :: Distance2,               -- (Latest) drag vector.
+    pdsLeft         :: Maybe Position2,         -- Left button currently down.
+    pdsRight        :: Maybe Position2,         -- Right button currently down.
+    pdsDrag         :: Maybe Position2          -- Currently dragging.
 }
 
 
 -- Initial state.
 initPDS = PDState {
-	      pdsPos          = origin,
-	      pdsDragStartPos = origin,
-	      pdsDragVec      = zeroVector,
-	      pdsLeft         = Nothing,
-	      pdsRight        = Nothing,
-	      pdsDrag         = Nothing
-	  }
+              pdsPos          = origin,
+              pdsDragStartPos = origin,
+              pdsDragVec      = zeroVector,
+              pdsLeft         = Nothing,
+              pdsRight        = Nothing,
+              pdsDrag         = Nothing
+          }
 
 
 wiToPDS :: SF WinInput PDState
-wiToPDS = accumHoldBy nextPDS initPDS
+wiToPDS = AU.accumHoldBy nextPDS initPDS
 
 
 -- Compute next pointing device state.
 nextPDS :: PDState -> HGL.Event -> PDState
-nextPDS pds (HGL.Key {}) = pds			-- Currently we ignore keys.
+nextPDS pds (HGL.Key {}) = pds                  -- Currently we ignore keys.
 nextPDS pds (HGL.Button {HGL.pt = p, HGL.isLeft = True, HGL.isDown = True}) =
     -- Left button pressed.
     pds {pdsPos = p', pdsDragVec = dv, pdsLeft = Just p'}
     where
         p' = gPointToPosition2 p
-	dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) (pdsDrag pds)
+        dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) (pdsDrag pds)
 nextPDS pds (HGL.Button {HGL.pt = p, HGL.isLeft = True, HGL.isDown = False}) =
     -- Left button released.
     pds {pdsPos = p', pdsDragVec = dv, pdsLeft = Nothing, pdsDrag = md}
     where
         p' = gPointToPosition2 p
         md = maybe Nothing (const (pdsDrag pds)) (pdsRight pds)
-	dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) md
+        dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) md
 nextPDS pds (HGL.Button {HGL.pt = p, HGL.isLeft = False, HGL.isDown = True}) =
     -- Right button pressed.
     pds {pdsPos = p', pdsDragVec = dv, pdsRight = Just p'}
     where
         p' = gPointToPosition2 p
-	dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) (pdsDrag pds)
+        dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) (pdsDrag pds)
 nextPDS pds (HGL.Button {HGL.pt = p, HGL.isLeft = False, HGL.isDown = False}) =
     -- Right button released.
     pds {pdsPos = p', pdsDragVec = dv, pdsRight = Nothing, pdsDrag = md}
     where
         p' = gPointToPosition2 p
         md = maybe Nothing (const (pdsDrag pds)) (pdsLeft pds)
-	dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) md
+        dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) md
 nextPDS pds (HGL.MouseMove {HGL.pt = p}) =
     -- Mouse move.
     pds {pdsPos = p', pdsDragStartPos = dsp, pdsDragVec = dv, pdsDrag = md}
     where
         p' = gPointToPosition2 p
         md = case pdsLeft pds of
-	         mlp@(Just _) -> mlp
-		 Nothing      -> pdsRight pds
+                 mlp@(Just _) -> mlp
+                 Nothing      -> pdsRight pds
         dsp = maybe (pdsDragStartPos pds) id md
-	dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) md
-nextPDS pds _ = pds				-- Ignore unknown events.
+        dv = maybe (pdsDragVec pds) (\dspos -> p' .-. dspos) md
+nextPDS pds _ = pds                             -- Ignore unknown events.
 
 
 ------------------------------------------------------------------------------

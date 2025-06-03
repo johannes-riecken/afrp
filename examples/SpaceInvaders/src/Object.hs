@@ -2,10 +2,10 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		Object						     *
-*       Purpose:	Definition of objects in the world and their static  *
-*			properties.					     *
-*       Author:		Henrik Nilsson					     *
+*       Module:         Object                                               *
+*       Purpose:        Definition of objects in the world and their static  *
+*                       properties.                                          *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -17,26 +17,26 @@ module Object (
     ObjInput(..),
     ObjOutput(..),
     ObsObjState(..),
-    oosGun,		-- :: Position2 -> Velocity2 -> ObsObjState
-    oosMissile,		-- :: Position2 -> Velocity2 -> ObsObjState
-    oosAlien,		-- :: Position2 -> Heading -> Velocity2 -> ObsObjState
-    isGun,		-- :: ObsObjState -> Bool
-    isMissile,		-- :: ObsObjState -> Bool
-    isAlien,		-- :: ObsObjState -> Bool
-    touches,		-- :: ObsObjState -> ObsObjState -> Bool
-    approaches,		-- :: ObsObjState -> ObsObjState -> Bool
-    colliding,		-- :: ObsObjState -> ObsObjState -> Bool
-    gunRadius,		-- :: Length
-    gunBase,		-- :: Length
-    gunHeight,		-- :: Length
-    gunSpeedMax,	-- :: Speed
-    gunAccMax,		-- :: Acceleration
-    missileRadius, 	-- :: Length
+    oosGun,             -- :: Position2 -> Velocity2 -> ObsObjState
+    oosMissile,         -- :: Position2 -> Velocity2 -> ObsObjState
+    oosAlien,           -- :: Position2 -> Heading -> Velocity2 -> ObsObjState
+    isGun,              -- :: ObsObjState -> Bool
+    isMissile,          -- :: ObsObjState -> Bool
+    isAlien,            -- :: ObsObjState -> Bool
+    touches,            -- :: ObsObjState -> ObsObjState -> Bool
+    approaches,         -- :: ObsObjState -> ObsObjState -> Bool
+    colliding,          -- :: ObsObjState -> ObsObjState -> Bool
+    gunRadius,          -- :: Length
+    gunBase,            -- :: Length
+    gunHeight,          -- :: Length
+    gunSpeedMax,        -- :: Speed
+    gunAccMax,          -- :: Acceleration
+    missileRadius,      -- :: Length
     missileInitialSpeed,-- :: Speed
-    missileLifeSpan,	-- :: Time
-    alienRadius,	-- :: Length
-    alienWingRadius,	-- :: Length
-    alienAccMax		-- :: Acceleration
+    missileLifeSpan,    -- :: Time
+    alienRadius,        -- :: Length
+    alienWingRadius,    -- :: Length
+    alienAccMax         -- :: Acceleration
 ) where
 
 import AFRP (SF, Event)
@@ -73,26 +73,26 @@ data ObjOutput = ObjOutput {
 -- the fields (e.g. if a bounding box field were added) might be dependent on
 -- others. The reason ObsObjState is not exported abstractly is that it is
 -- convenient to inspect it by pattern matching.
--- 
+--
 -- To avoid space leaks, all fields (except possibly dependent ones) are
 -- strict.
 
 data ObsObjState =
       OOSGun {
-	  oosPos    :: !Position2,
-	  oosVel    :: !Velocity2,
+          oosPos    :: !Position2,
+          oosVel    :: !Velocity2,
           oosRadius :: !Length,
           oosAmLvl  :: !Int
       }
     | OOSMissile {
-	  oosPos    :: !Position2,
-	  oosVel    :: !Velocity2,
+          oosPos    :: !Position2,
+          oosVel    :: !Velocity2,
           oosRadius :: !Length
       }
     | OOSAlien {
-	  oosPos    :: !Position2,
-	  oosHdng   :: !Heading,
-	  oosVel    :: !Velocity2,
+          oosPos    :: !Position2,
+          oosHdng   :: !Heading,
+          oosVel    :: !Velocity2,
           oosRadius :: !Length
       }
 
@@ -102,7 +102,7 @@ data ObsObjState =
 ------------------------------------------------------------------------------
 
 instance Forceable ObsObjState where
-    -- If non-strict fields: oosNonStrict1 obj `seq` ... `seq` obj 
+    -- If non-strict fields: oosNonStrict1 obj `seq` ... `seq` obj
     force obj = obj
 
 
@@ -116,26 +116,26 @@ instance Forceable ObsObjState where
 oosGun :: Position2 -> Velocity2 -> Int -> ObsObjState
 oosGun p v l = OOSGun {
                    oosPos    = p,
-	           oosVel    = v,
-	           oosRadius = gunRadius,
-		   oosAmLvl  = l
+                   oosVel    = v,
+                   oosRadius = gunRadius,
+                   oosAmLvl  = l
                }
 
 
 oosMissile :: Position2 -> Velocity2 -> ObsObjState
 oosMissile p v = OOSMissile {
                      oosPos    = p,
-	             oosVel    = v,
-	             oosRadius = missileRadius
+                     oosVel    = v,
+                     oosRadius = missileRadius
                  }
 
 
 oosAlien :: Position2 -> Heading -> Velocity2 -> ObsObjState
 oosAlien p h v = OOSAlien {
                      oosPos    = p,
-	             oosHdng   = normalizeHeading h,
-	             oosVel    = v,
-	             oosRadius = alienRadius
+                     oosHdng   = normalizeHeading h,
+                     oosVel    = v,
+                     oosRadius = alienRadius
                  }
 
 

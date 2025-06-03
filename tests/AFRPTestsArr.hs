@@ -3,8 +3,8 @@
 *                                  A F R P                                   *
 *                                                                            *
 *       Module:         AFRPTestsArr                                         *
-*       Purpose:        Test cases for arr				     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Purpose:        Test cases for arr                                   *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

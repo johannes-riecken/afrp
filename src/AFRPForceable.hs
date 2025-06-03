@@ -3,8 +3,8 @@
 *                                  A F R P                                   *
 *                                                                            *
 *       Module:         AFRPForceable                                        *
-*       Purpose:        Hyperstrict evaluation.				     *
-*	Author:		Zhanyong Wan					     *
+*       Purpose:        Hyperstrict evaluation.                              *
+*       Author:         Zhanyong Wan                                         *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

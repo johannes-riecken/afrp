@@ -3,8 +3,8 @@
 *                                  A F R P                                   *
 *                                                                            *
 *       Module:         AFRPEvent                                            *
-*       Purpose:        Definition of AFRP Event type.			     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Purpose:        Definition of AFRP Event type.                       *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -69,7 +69,7 @@
 --   or:     introcuce "event = Event", call what's now "event" "fromEvent",
 --           and call what's now called "fromEvent" something else, like
 --           "unsafeFromEvent"??? Better, dump it! After all, using current
---	     names, "fromEvent = event undefined"!
+--           names, "fromEvent = event undefined"!
 
 module AFRPEvent where
 
@@ -95,7 +95,7 @@ infixl 6 `lMerge`, `rMerge`, `merge`
 -- abstractions through judicious use of e.g. snap and switching.
 
 data Event a = NoEvent
-	     | Event a
+             | Event a
 
 
 -- Make the NoEvent constructor available. Useful e.g. for initialization,
@@ -230,8 +230,8 @@ mergeBy resolve (Event l)    (Event r)    = Event (resolve l r)
 
 
 -- A generic event merge utility:
-mapMerge :: (a -> c) -> (b -> c) -> (a -> b -> c) 
-	    -> Event a -> Event b -> Event c
+mapMerge :: (a -> c) -> (b -> c) -> (a -> b -> c)
+            -> Event a -> Event b -> Event c
 mapMerge _  _  _   NoEvent   NoEvent = NoEvent
 mapMerge lf _  _   (Event l) NoEvent = Event (lf l)
 mapMerge _  rf _   NoEvent  (Event r) = Event (rf r)
@@ -245,8 +245,8 @@ mergeEvents = foldr lMerge NoEvent
 -- Collects simultaneous event occurrences; no event if none.
 catEvents :: [Event a] -> Event [a]
 catEvents eas = case [ a | Event a <- eas ] of
-		    [] -> NoEvent
-		    as -> Event as
+                    [] -> NoEvent
+                    as -> Event as
 
 
 -- Join (conjucntion) of two events.
@@ -276,8 +276,8 @@ filterE _ NoEvent     = NoEvent
 mapFilterE :: (a -> Maybe b) -> Event a -> Event b
 mapFilterE _ NoEvent   = NoEvent
 mapFilterE f (Event a) = case f a of
-			    Nothing -> NoEvent
-			    Just b  -> Event b
+                            Nothing -> NoEvent
+                            Just b  -> Event b
 
 
 -- Enable/disable event occurences based on an external condition.

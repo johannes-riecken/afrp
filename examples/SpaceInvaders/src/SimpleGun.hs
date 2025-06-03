@@ -1,25 +1,24 @@
 {-# LANGUAGE Arrows #-}
+module SimpleGun (
+    simpleGunObject -- :: Object
+) where
+
+import System.Random
 {- $Id: SimpleGun.as,v 1.2 2003/11/10 21:28:58 antony Exp $
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		SimpleGun					     *
-*       Purpose:	A simple gun as a signal function        	     *
-*       Author:		Antony Courtney					     *
+*       Module:         SimpleGun                                            *
+*       Purpose:        A simple gun as a signal function                    *
+*       Author:         Antony Courtney                                      *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
 ******************************************************************************
 -}
 
-module SimpleGun (
-    simpleGunObject -- :: Object
-) where
-
-import qualified Random
-
 import AFRP
-import AFRPUtilities
+import qualified AFRPUtilities as AU
 import AFRPGeometry
 
 import PhysicalDimensions
@@ -51,14 +50,14 @@ simpleGun (Point2 x0 y0) = proc gi -> do
 
     -- basic physics:
     v <- integral -< clampAcc v ad
-    x <- (x0+) ^<< integral -< v
+    x <- (x0+) AU.^<< integral -< v
 
   fire <- lbp -< gi
   returnA -< SimpleGunState {
                sgsPos = (Point2 x y0),
                sgsVel = (vector2 v 0),
                sgsFired = fire
-             }                 
+             }
 
 ------------------------------------------------------------------------------
 -- Support
@@ -67,7 +66,7 @@ simpleGun (Point2 x0 y0) = proc gi -> do
 -- Compute actual acceleration from
 -- desired acceleration by setting
 -- hard limits on acceleration and velocity:
-clampAcc v ad = 
+clampAcc v ad =
   let a = symLimit gunAccMax ad
   in if (-gunSpeedMax) <= v && v <= gunSpeedMax
         || v < (-gunSpeedMax) && a > 0
@@ -108,14 +107,14 @@ gun (Point2 x0 y0) = proc objIn -> do
     x <- (x0+) ^<< integral -< v
 
   fire <- lbp -< gi
-  returnA -< 
+  returnA -<
     ObjOutput {
-      ooObsObjState = oosGun (Point2 x y0) 
+      ooObsObjState = oosGun (Point2 x y0)
                              (vector2 v 0),
       ooKillReq     = noEvent,
-      ooSpawnReq    = 
-        fire `tag` 
-          [missile (Point2 x (y0 + (gunHeight/2))) 
+      ooSpawnReq    =
+        fire `tag`
+          [missile (Point2 x (y0 + (gunHeight/2)))
                    (vector2 v missileInitialSpeed)]
     }
 -}
@@ -123,22 +122,22 @@ gun (Point2 x0 y0) = proc objIn -> do
 -- Ammunition magazine. Reloaded up to maximal
 -- capacity at constant rate.
 -- n ... Maximal and initial number of missiles.
--- f ..........	Reload rate.
--- input ......	Trigger.
--- output .....	Tuple:
+-- f .......... Reload rate.
+-- input ...... Trigger.
+-- output ..... Tuple:
 --   #1: Current number of missiles in magazine.
 --   #2: Missile fired event.
-magazine :: 
-  Int -> Frequency 
+magazine ::
+  Int -> Frequency
       -> SF (Event ()) (Int, Event ())
 magazine n f = proc trigger -> do
   reload <- repeatedly (1/f) () -< ()
-  (level,canFire) 
-      <- accumHold (n,True) -< 
+  (level,canFire)
+      <- AU.accumHold (n,True) -<
              (trigger `tag` dec)
              `lMerge` (reload `tag` inc)
-  returnA -< (level, 
-	      trigger `gate` canFire)
+  returnA -< (level,
+              trigger `gate` canFire)
   where
     inc :: (Int,Bool) -> (Int, Bool)
     inc (l,_) | l < n = (l + 1, l > 0)
@@ -156,11 +155,11 @@ missile p0 v0 = proc oi -> do
         vp  <- iPre v0                     -< v
         ffi <- forceField                  -< (p, vp)
         v  <- (v0 ^+^) ^<< impulseIntegral -< (gravity, ffi)
-	p  <- (p0 .+^) ^<< integral        -< v
+        p  <- (p0 .+^) ^<< integral        -< v
     die <- after missileLifeSpan () -< ()
     returnA -< ObjOutput {
-	           ooObsObjState = oosMissile p v,
-		   ooKillReq     = oiHit oi `lMerge` die,
+                   ooObsObjState = oosMissile p v,
+                   ooKillReq     = oiHit oi `lMerge` die,
                    ooSpawnReq    = noEvent
                }
 
@@ -179,11 +178,11 @@ missile p0 v0 = proc oi -> do
 field :: Position2 -> Acceleration2
 field (Point2 x _) = vector2 (leftAcc - rightAcc) 0 ^+^ gravity
     where
-	leftAcc  = min (if x > worldXMin
+        leftAcc  = min (if x > worldXMin
                         then k / (x - worldXMin)^3
                         else maxAcc)
                        maxAcc
-	rightAcc = min (if x < worldXMax
+        rightAcc = min (if x < worldXMax
                         then k / (worldXMax - x)^3
                         else maxAcc)
                        maxAcc

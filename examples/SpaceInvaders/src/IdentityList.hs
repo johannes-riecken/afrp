@@ -2,10 +2,10 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		IdentityList					     *
-*       Purpose:	Association list with automatic key assignment and   *
-*			identity-preserving map and filter operations.	     *
-*       Author:		Henrik Nilsson					     *
+*       Module:         IdentityList                                         *
+*       Purpose:        Association list with automatic key assignment and   *
+*                       identity-preserving map and filter operations.       *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -13,27 +13,27 @@
 -}
 
 module IdentityList (
-    ILKey,	  -- Identity-list key type
-    IL,		  -- Identity-list, abstract. Instance of functor.
-    emptyIL,	  -- :: IL a
-    insertIL_,	  -- :: a -> IL a -> IL a
-    insertIL,	  -- :: a -> IL a -> (ILKey, IL a)
-    listToIL,	  -- :: [a] -> IL a
-    keysIL,	  -- :: IL a -> [ILKey]
-    elemsIL,	  -- :: IL a -> [a]
-    assocsIL,	  -- :: IL a -> [(ILKey, a)]
-    deleteIL,	  -- :: ILKey -> IL a -> IL a
-    mapIL,	  -- :: ((ILKey, a) -> b) -> IL a -> IL b
-    filterIL,	  -- :: ((ILKey, a) -> Bool) -> IL a -> IL a
+    ILKey,        -- Identity-list key type
+    IL,           -- Identity-list, abstract. Instance of functor.
+    emptyIL,      -- :: IL a
+    insertIL_,    -- :: a -> IL a -> IL a
+    insertIL,     -- :: a -> IL a -> (ILKey, IL a)
+    listToIL,     -- :: [a] -> IL a
+    keysIL,       -- :: IL a -> [ILKey]
+    elemsIL,      -- :: IL a -> [a]
+    assocsIL,     -- :: IL a -> [(ILKey, a)]
+    deleteIL,     -- :: ILKey -> IL a -> IL a
+    mapIL,        -- :: ((ILKey, a) -> b) -> IL a -> IL b
+    filterIL,     -- :: ((ILKey, a) -> Bool) -> IL a -> IL a
     mapFilterIL,  -- :: ((ILKey, a) -> Maybe b) -> IL a -> IL b
-    lookupIL,	  -- :: ILKey -> IL a -> Maybe a
-    findIL,	  -- :: ((ILKey, a) -> Bool) -> IL a -> Maybe a
-    mapFindIL,	  -- :: ((ILKey, a) -> Maybe b) -> IL a -> Maybe b
-    findAllIL,	  -- :: ((ILKey, a) -> Bool) -> IL a -> [a]
+    lookupIL,     -- :: ILKey -> IL a -> Maybe a
+    findIL,       -- :: ((ILKey, a) -> Bool) -> IL a -> Maybe a
+    mapFindIL,    -- :: ((ILKey, a) -> Maybe b) -> IL a -> Maybe b
+    findAllIL,    -- :: ((ILKey, a) -> Bool) -> IL a -> [a]
     mapFindAllIL  -- :: ((ILKey, a) -> Maybe b) -> IL a -> [b]
 ) where
 
-import List (find)
+import Data.List (find)
 
 
 ------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ insertIL a (IL {ilNextKey = k, ilAssocs = kas}) = (k, il') where
 
 listToIL :: [a] -> IL a
 listToIL as = IL {ilNextKey = length as,
-		  ilAssocs = reverse (zip [0..] as)} -- Maintain invariant!
+                  ilAssocs = reverse (zip [0..] as)} -- Maintain invariant!
 
 
 ------------------------------------------------------------------------------
@@ -104,9 +104,9 @@ deleteIL :: ILKey -> IL a -> IL a
 deleteIL k (IL {ilNextKey = nk, ilAssocs = kas}) =
     IL {ilNextKey = nk, ilAssocs = deleteHlp kas}
     where
-	deleteHlp []                                   = []
+        deleteHlp []                                   = []
         deleteHlp kakas@(ka@(k', _) : kas) | k > k'    = kakas
-					   | k == k'   = kas
+                                           | k == k'   = kas
                                            | otherwise = ka : deleteHlp kas
 
 
@@ -147,17 +147,17 @@ lookupIL k il = lookup k (ilAssocs il)
 findIL :: ((ILKey, a) -> Bool) -> IL a -> Maybe a
 findIL p (IL {ilAssocs = kas}) = findHlp kas
     where
-	findHlp []                = Nothing
+        findHlp []                = Nothing
         findHlp (ka@(_, a) : kas) = if p ka then Just a else findHlp kas
 
 
 mapFindIL :: ((ILKey, a) -> Maybe b) -> IL a -> Maybe b
 mapFindIL p (IL {ilAssocs = kas}) = mapFindHlp kas
     where
-	mapFindHlp []         = Nothing
+        mapFindHlp []         = Nothing
         mapFindHlp (ka : kas) = case p ka of
-				    Nothing     -> mapFindHlp kas
-				    jb@(Just _) -> jb
+                                    Nothing     -> mapFindHlp kas
+                                    jb@(Just _) -> jb
 
 
 findAllIL :: ((ILKey, a) -> Bool) -> IL a -> [a]

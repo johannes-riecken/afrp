@@ -2,9 +2,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:		AFRPGeometry					     *
-*       Purpose:	Basic geometrical abstractions.			     *
-*	Authors:	Henrik Nilsson and Antony Courtney		     *
+*       Module:         AFRPGeometry                                         *
+*       Purpose:        Basic geometrical abstractions.                      *
+*       Authors:        Henrik Nilsson and Antony Courtney                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

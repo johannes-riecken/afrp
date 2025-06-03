@@ -3,8 +3,8 @@
 *                                  A F R P                                   *
 *                                                                            *
 *       Module:         AFRPUtilities                                        *
-*       Purpose:        Derived utility definitions.			     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Purpose:        Derived utility definitions.                         *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -33,57 +33,57 @@
 
 module AFRPUtilities (
 -- General arrow utilities
-    (^>>),		-- :: Arrow a => (b -> c) -> a c d -> a b d
-    (>>^),		-- :: Arrow a => a b c -> (c -> d) -> a b d
-    (^<<),		-- :: Arrow a => (c -> d) -> a b c -> a b d 
-    (<<^),		-- :: Arrow a => a c d -> (b -> c) -> a b d
+    (^>>),              -- :: Arrow a => (b -> c) -> a c d -> a b d
+    (>>^),              -- :: Arrow a => a b c -> (c -> d) -> a b d
+    (^<<),              -- :: Arrow a => (c -> d) -> a b c -> a b d
+    (<<^),              -- :: Arrow a => a c d -> (b -> c) -> a b d
 
 -- Liftings
-    arr2,		-- :: Arrow a => (b->c->d) -> a (b,c) d
-    arr3,		-- :: Arrow a => (b->c->d->e) -> a (b,c,d) e
-    arr4,		-- :: Arrow a => (b->c->d->e->f) -> a (b,c,d,e) f
-    arr5,		-- :: Arrow a => (b->c->d->e->f->g) -> a (b,c,d,e,f) g
-    lift0,		-- :: Arrow a => c -> a b c
-    lift1,		-- :: Arrow a => (c->d) -> (a b c->a b d)
-    lift2,		-- :: Arrow a => (c->d->e) -> (a b c->a b d->a b e)
-    lift3,		-- :: Arrow a => (c->d->e->f) -> (a b c-> ... ->a b f)
-    lift4,		-- :: Arrow a => (c->d->e->f->g) -> (a b c->...->a b g)
-    lift5,		-- :: Arrow a => (c->d->e->f->g->h)->(a b c->...a b h)
+    arr2,               -- :: Arrow a => (b->c->d) -> a (b,c) d
+    arr3,               -- :: Arrow a => (b->c->d->e) -> a (b,c,d) e
+    arr4,               -- :: Arrow a => (b->c->d->e->f) -> a (b,c,d,e) f
+    arr5,               -- :: Arrow a => (b->c->d->e->f->g) -> a (b,c,d,e,f) g
+    lift0,              -- :: Arrow a => c -> a b c
+    lift1,              -- :: Arrow a => (c->d) -> (a b c->a b d)
+    lift2,              -- :: Arrow a => (c->d->e) -> (a b c->a b d->a b e)
+    lift3,              -- :: Arrow a => (c->d->e->f) -> (a b c-> ... ->a b f)
+    lift4,              -- :: Arrow a => (c->d->e->f->g) -> (a b c->...->a b g)
+    lift5,              -- :: Arrow a => (c->d->e->f->g->h)->(a b c->...a b h)
 
 -- Event sources
-    snap,		-- :: SF a (Event a)
-    snapAfter,		-- :: Time -> SF a (Event a)
-    sample,		-- :: Time -> SF a (Event a)
-    recur,		-- :: SF a (Event b) -> SF a (Event b)
+    snap,               -- :: SF a (Event a)
+    snapAfter,          -- :: Time -> SF a (Event a)
+    sample,             -- :: Time -> SF a (Event a)
+    recur,              -- :: SF a (Event b) -> SF a (Event b)
 
 -- Parallel composition/switchers with "zip" routing
-    parZ,		-- [SF a b] -> SF [a] [b]
-    pSwitchZ,		-- [SF a b] -> SF ([a],[b]) (Event c)
-			-- -> ([SF a b] -> c -> SF [a] [b]) -> SF [a] [b]
-    dpSwitchZ,		-- [SF a b] -> SF ([a],[b]) (Event c)
-			-- -> ([SF a b] -> c ->SF [a] [b]) -> SF [a] [b]
-    rpSwitchZ,		-- [SF a b] -> SF ([a], Event ([SF a b]->[SF a b])) [b]
-    drpSwitchZ,		-- [SF a b] -> SF ([a], Event ([SF a b]->[SF a b])) [b]
+    parZ,               -- [SF a b] -> SF [a] [b]
+    pSwitchZ,           -- [SF a b] -> SF ([a],[b]) (Event c)
+                        -- -> ([SF a b] -> c -> SF [a] [b]) -> SF [a] [b]
+    dpSwitchZ,          -- [SF a b] -> SF ([a],[b]) (Event c)
+                        -- -> ([SF a b] -> c ->SF [a] [b]) -> SF [a] [b]
+    rpSwitchZ,          -- [SF a b] -> SF ([a], Event ([SF a b]->[SF a b])) [b]
+    drpSwitchZ,         -- [SF a b] -> SF ([a], Event ([SF a b]->[SF a b])) [b]
 
 -- Guards and automata-oriented combinators
-    provided,		-- :: (a -> Bool) -> SF a b -> SF a b -> SF a b
+    provided,           -- :: (a -> Bool) -> SF a b -> SF a b -> SF a b
 
 -- Wave-form generation
-    dHold,		-- :: a -> SF (Event a) a
-    dTrackAndHold,	-- :: a -> SF (Maybe a) a
+    dHold,              -- :: a -> SF (Event a) a
+    dTrackAndHold,      -- :: a -> SF (Maybe a) a
 
 -- Accumulators
-    accumHold,		-- :: a -> SF (Event (a -> a)) a
-    dAccumHold,		-- :: a -> SF (Event (a -> a)) a
-    accumHoldBy,	-- :: (b -> a -> b) -> b -> SF (Event a) b
-    dAccumHoldBy,	-- :: (b -> a -> b) -> b -> SF (Event a) b
-    count,		-- :: Integral b => SF (Event a) (Event b)
+    accumHold,          -- :: a -> SF (Event (a -> a)) a
+    dAccumHold,         -- :: a -> SF (Event (a -> a)) a
+    accumHoldBy,        -- :: (b -> a -> b) -> b -> SF (Event a) b
+    dAccumHoldBy,       -- :: (b -> a -> b) -> b -> SF (Event a) b
+    count,              -- :: Integral b => SF (Event a) (Event b)
 
 -- Delays
-    fby,		-- :: b -> SF a b -> SF a b,	infixr 0
+    fby,                -- :: b -> SF a b -> SF a b,    infixr 0
 
 -- Integrals
-    impulseIntegral	-- :: VectorSpace a k => SF (a, Event a) a
+    impulseIntegral     -- :: VectorSpace a k => SF (a, Event a) a
 ) where
 
 import AFRPDiagnostics
@@ -106,7 +106,7 @@ f ^>> a = arr f >>> a
 a >>^ f = a >>> arr f
 
 
-(^<<) :: Arrow a => (c -> d) -> a b c -> a b d 
+(^<<) :: Arrow a => (c -> d) -> a b c -> a b d
 f ^<< a = arr f <<< a
 
 
@@ -174,9 +174,9 @@ snap = switch (never &&& (identity &&& now () >>^ \(a, e) -> e `tag` a)) now
 -- that time.
 snapAfter :: Time -> SF a (Event a)
 snapAfter t_ev = switch (never
-			 &&& (identity
-			      &&& after t_ev () >>^ \(a, e) -> e `tag` a))
-			now
+                         &&& (identity
+                              &&& after t_ev () >>^ \(a, e) -> e `tag` a))
+                        now
 
 
 -- Sample a signal at regular intervals.
@@ -189,7 +189,7 @@ sample p_ev = identity &&& repeatedly p_ev () >>^ \(a, e) -> e `tag` a
 recur :: SF a (Event b) -> SF a (Event b)
 recur sfe = switch (never &&& sfe) recurAux
     where
-	recurAux b = switch (now b &&& sfe) recurAux
+        recurAux b = switch (now b &&& sfe) recurAux
 
 
 ------------------------------------------------------------------------------
@@ -199,16 +199,16 @@ recur sfe = switch (never &&& sfe) recurAux
 safeZip :: String -> [a] -> [b] -> [(a,b)]
 safeZip fn as bs = safeZip' as bs
     where
-	safeZip' as []     = []
-	safeZip' as (b:bs) = (head' as, b) : safeZip' (tail' as) bs
+        safeZip' as []     = []
+        safeZip' as (b:bs) = (head' as, b) : safeZip' (tail' as) bs
 
-	head' []    = err
-	head' (a:_) = a
+        head' []    = err
+        head' (a:_) = a
 
-	tail' []     = err
-	tail' (_:as) = as
+        tail' []     = err
+        tail' (_:as) = as
 
-	err = usrErr "AFRPUtilities" fn "Input list too short."
+        err = usrErr "AFRPUtilities" fn "Input list too short."
 
 
 parZ :: [SF a b] -> SF [a] [b]
@@ -243,7 +243,7 @@ provided p sft sff =
     switch (constant undefined &&& snap) $ \a0 ->
     if p a0 then stt else stf
     where
-	stt = switch (sft &&& (not . p ^>> edge)) (const stf)
+        stt = switch (sft &&& (not . p ^>> edge)) (const stf)
         stf = switch (sff &&& (p ^>> edge)) (const stt)
 
 
@@ -256,7 +256,7 @@ provided p sft sff =
 dHold :: a -> SF (Event a) a
 dHold a0 = dSwitch (constant a0 &&& identity) dHold'
     where
-	dHold' a = dSwitch (constant a &&& notYet) dHold'
+        dHold' a = dSwitch (constant a &&& notYet) dHold'
 
 
 dTrackAndHold :: a -> SF (Maybe a) a

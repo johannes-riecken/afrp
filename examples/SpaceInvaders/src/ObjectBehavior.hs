@@ -1,11 +1,18 @@
 {-# LANGUAGE Arrows #-}
+module ObjectBehavior (
+    gun,       -- :: Position2 -> Object
+    missile,   -- :: Position2 -> Velocity2 -> Object
+    alien      -- :: RandomGen g => g -> Position2 -> Object
+) where
+
+import System.Random
 {- $Id: ObjectBehavior.as,v 1.2 2003/11/10 21:28:58 antony Exp $
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		ObjectBehavior					     *
-*       Purpose:	Behavior of objects.				     *
-*       Author:		Henrik Nilsson					     *
+*       Module:         ObjectBehavior                                       *
+*       Purpose:        Behavior of objects.                                 *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -13,9 +20,9 @@
 -}
 
 module ObjectBehavior (
-    gun,	-- :: Position2 -> Object
-    missile, 	-- :: Position2 -> Velocity2 -> Object
-    alien 	-- :: RandomGen g => g -> Position2 -> Object
+    gun,        -- :: Position2 -> Object
+    missile,    -- :: Position2 -> Velocity2 -> Object
+    alien       -- :: RandomGen g => g -> Position2 -> Object
 ) where
 
 import qualified Random
@@ -37,30 +44,30 @@ import Object
 gun :: Position2 -> Object
 gun (Point2 x0 y0) = proc (ObjInput {oiGameInput = gi}) -> do
     -- Position.
-    (Point2 xd _) <- ptrPos -< gi		-- Desired position
+    (Point2 xd _) <- ptrPos -< gi               -- Desired position
     rec
         -- Controller.
-        let ad = 10 * (xd - x) - 5 * v		-- Desired acceleration
+        let ad = 10 * (xd - x) - 5 * v          -- Desired acceleration
 
         -- Physics with hard limits on acceleration and speed.
         v <- integral -< let a = symLimit gunAccMax ad
                          in
-			     if (-gunSpeedMax) <= v && v <= gunSpeedMax
+                             if (-gunSpeedMax) <= v && v <= gunSpeedMax
                                 || v < (-gunSpeedMax) && a > 0
                                 || v > gunSpeedMax && a < 0
                              then a
                              else 0
-        x <- (x0+) ^<< integral -< v
+        x <- (x0+) AU.^<< integral -< v
 
     -- Fire mechanism and ammunition level.
     trigger       <- lbp             -< gi
     (level, fire) <- magazine 20 0.5 -< trigger
 
     returnA -< ObjOutput {
-	           ooObsObjState = oosGun (Point2 x y0) (vector2 v 0) level,
-		   ooKillReq     = noEvent,
+                   ooObsObjState = oosGun (Point2 x y0) (vector2 v 0) level,
+                   ooKillReq     = noEvent,
                    ooSpawnReq    =
-                       fire `tag` [missile (Point2 x (y0 + (gunHeight/2))) 
+                       fire `tag` [missile (Point2 x (y0 + (gunHeight/2)))
                                            (vector2 v missileInitialSpeed)]
                }
 
@@ -68,22 +75,22 @@ gun (Point2 x0 y0) = proc (ObjInput {oiGameInput = gi}) -> do
 -- Ammunition magazine. Reloaded up to maximal
 -- capacity at constant rate.
 -- n ... Maximal and initial number of missiles.
--- f ..........	Reload rate.
--- input ......	Trigger.
--- output .....	Tuple:
+-- f .......... Reload rate.
+-- input ...... Trigger.
+-- output ..... Tuple:
 --   #1: Current number of missiles in magazine.
 --   #2: Missile fired event.
-magazine :: 
-  Int -> Frequency 
+magazine ::
+  Int -> Frequency
       -> SF (Event ()) (Int, Event ())
 magazine n f = proc trigger -> do
   reload <- repeatedly (1/f) () -< ()
-  (level,canFire) 
-      <- accumHold (n,True) -< 
+  (level,canFire)
+      <- AU.accumHold (n,True) -<
              (trigger `tag` dec)
              `lMerge` (reload `tag` inc)
-  returnA -< (level, 
-	      trigger `gate` canFire)
+  returnA -< (level,
+              trigger `gate` canFire)
   where
     inc :: (Int,Bool) -> (Int, Bool)
     inc (l,_) | l < n = (l + 1, l > 0)
@@ -93,12 +100,12 @@ magazine n f = proc trigger -> do
               | otherwise = (l, False)
 
 -- Ammunition magazine. Reloaded up to maximal capacity at constant rate.
--- n ..........	Maximal and initial number of missiles.
--- f ..........	Reload rate.
--- input ......	Trigger.
--- output .....	Tuple:
---		#1 ....	Current number of missiles in magazine.
---		#2 ....	Missile fired.
+-- n .......... Maximal and initial number of missiles.
+-- f .......... Reload rate.
+-- input ...... Trigger.
+-- output ..... Tuple:
+--              #1 .... Current number of missiles in magazine.
+--              #2 .... Missile fired.
 
 {-
  Henrik's original version, commented out for now:
@@ -113,8 +120,8 @@ magazine n f = proc trigger -> do
     level        <- hold n              -< fmap fst newLevelFire
     returnA -< (level, filterE snd newLevelFire `tag` ())
     where
-	-- inc, dec :: Int -> (Int, Maybe (Int, Bool))
-	inc l | l < n     = (l + 1, Just (l + 1, False))
+        -- inc, dec :: Int -> (Int, Maybe (Int, Bool))
+        inc l | l < n     = (l + 1, Just (l + 1, False))
               | otherwise = (l, Nothing)
         dec l | l > 0     = (l - 1, Just (l - 1, True))
               | otherwise = (l, Nothing)
@@ -134,11 +141,11 @@ missile p0 v0 = proc oi -> do
         vp  <- iPre v0                     -< v
         ffi <- forceField                  -< (p, vp)
         v  <- (v0 ^+^) ^<< impulseIntegral -< (gravity, ffi)
-	p  <- (p0 .+^) ^<< integral        -< v
+        p  <- (p0 .+^) ^<< integral        -< v
     die <- after missileLifeSpan () -< ()
     returnA -< ObjOutput {
-	           ooObsObjState = oosMissile p v,
-		   ooKillReq     = oiHit oi `lMerge` die,
+                   ooObsObjState = oosMissile p v,
+                   ooKillReq     = oiHit oi `lMerge` die,
                    ooSpawnReq    = noEvent
                }
 
@@ -151,49 +158,49 @@ type ShieldLevel = Double
 
 
 -- Alien behavior.
--- g ..........	Random generator.
--- p0 .........	Initial position.
+-- g .......... Random generator.
+-- p0 ......... Initial position.
 -- vyd ........ Desired vertical speed.
 
 alien :: RandomGen g => g -> Position2 -> Velocity -> Object
 alien g p0 vyd = proc oi -> do
     rec
-	-- Pick a desired horizontal position.
-        rx     <- noiseR (worldXMin, worldXMax) g -< () 
+        -- Pick a desired horizontal position.
+        rx     <- noiseR (worldXMin, worldXMax) g -< ()
         sample <- occasionally g 5 ()             -< ()
-        xd     <- hold (point2X p0)               -< sample `tag` rx    
-	
-        -- Controller. Control constants not optimized. Who says aliens know
-	-- anything about control theory?
-        let axd = 5 * (xd - point2X p) - 3 * (vector2X v)
-	    ayd = 20 * (vyd - (vector2Y v))
-	    ad  = vector2 axd ayd
-	    h   = vector2Theta ad
+        xd     <- hold (point2X p0)               -< sample `tag` rx
 
-	-- Physics
-	let a = vector2Polar (min alienAccMax (vector2Rho ad)) h
+        -- Controller. Control constants not optimized. Who says aliens know
+        -- anything about control theory?
+        let axd = 5 * (xd - point2X p) - 3 * (vector2X v)
+            ayd = 20 * (vyd - (vector2Y v))
+            ad  = vector2 axd ayd
+            h   = vector2Theta ad
+
+        -- Physics
+        let a = vector2Polar (min alienAccMax (vector2Rho ad)) h
         vp  <- iPre v0                      -< v
         ffi <- forceField                   -< (p, vp)
         v   <- (v0 ^+^) ^<< impulseIntegral -< (gravity ^+^ a, ffi)
-	p   <- (p0 .+^) ^<< integral        -< v
+        p   <- (p0 .+^) ^<< integral        -< v
 
-	-- Shields
-	sl  <- shield -< oiHit oi
-	die <- edge   -< sl <= 0
+        -- Shields
+        sl  <- shield -< oiHit oi
+        die <- edge   -< sl <= 0
 
     returnA -< ObjOutput {
-	           ooObsObjState = oosAlien p h v,
-		   ooKillReq     = die,
+                   ooObsObjState = oosAlien p h v,
+                   ooKillReq     = die,
                    ooSpawnReq    = noEvent
                }
     where
-	v0 = zeroVector
+        v0 = zeroVector
 
 
 shield :: SF (Event ()) ShieldLevel
 shield = proc hit -> do
     rec
-	let rechargeRate = if sl < slMax then slMax / 10 else 0
+        let rechargeRate = if sl < slMax then slMax / 10 else 0
         sl <- (slMax +) ^<< impulseIntegral -< (rechargeRate, hit `tag` damage)
     returnA -< sl
     where
@@ -216,11 +223,11 @@ shield = proc hit -> do
 field :: Position2 -> Acceleration2
 field (Point2 x _) = vector2 (leftAcc - rightAcc) 0 ^+^ gravity
     where
-	leftAcc  = min (if x > worldXMin
+        leftAcc  = min (if x > worldXMin
                         then k / (x - worldXMin)^3
                         else maxAcc)
                        maxAcc
-	rightAcc = min (if x < worldXMax
+        rightAcc = min (if x < worldXMax
                         then k / (worldXMax - x)^3
                         else maxAcc)
                        maxAcc
