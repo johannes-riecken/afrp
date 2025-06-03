@@ -2,9 +2,9 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:         Diagnostics					     *
-*       Purpose:        Standardized error-reporting for Invaders	     *
-*	Authors:	Henrik Nilsson					     *
+*       Module:         Diagnostics                                          *
+*       Purpose:        Standardized error-reporting for Invaders            *
+*       Authors:        Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

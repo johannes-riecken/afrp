@@ -2,9 +2,9 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		ColorBindings					     *
-*       Purpose:	Definition of colours for various objects.	     *
-*       Author:		Henrik Nilsson					     *
+*       Module:         ColorBindings                                        *
+*       Purpose:        Definition of colours for various objects.           *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -19,9 +19,9 @@ import Colors
 -- Landscape colors
 ------------------------------------------------------------------------------
 
-distantMountainColor	= MidnightBlue
-closeMountainColor	= Purple
-groundColor		= Red
+distantMountainColor    = MidnightBlue
+closeMountainColor      = Purple
+groundColor             = Red
 
 
 ------------------------------------------------------------------------------

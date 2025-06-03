@@ -4,7 +4,7 @@
 *                                                                            *
 *       Module:         testAFRPMain                                         *
 *       Purpose:        Main driver routine for running tests.               *
-*	Authors:	Henrik Nilsson and Antony Courtney		     *
+*       Authors:        Henrik Nilsson and Antony Courtney                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -21,9 +21,9 @@ import System -- getArgs
 -- main = runSpaceTests
 
 data TestFlags = TestFlags { tReg :: Bool -- run regression tests
-			   , tSpace :: Bool -- run space tests
-			   , tHelp :: Bool -- print usage and exit
-			     }
+                           , tSpace :: Bool -- run space tests
+                           , tHelp :: Bool -- print usage and exit
+                             }
 
 defFlags = TestFlags { tReg = False, tSpace = False, tHelp = False}
 allFlags = TestFlags { tReg = True, tSpace = True, tHelp = False}

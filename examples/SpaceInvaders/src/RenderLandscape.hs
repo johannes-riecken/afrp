@@ -2,9 +2,9 @@
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:         RenderLandscape					     *
-*       Purpose:        Rendering of the fixed backdrop.		     *
-*       Author:		Henrik Nilsson					     *
+*       Module:         RenderLandscape                                      *
+*       Purpose:        Rendering of the fixed backdrop.                     *
+*       Author:         Henrik Nilsson                                       *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -12,11 +12,11 @@
 -}
 
 module RenderLandscape (
-    landscape		-- :: HGL.Graphic
+    landscape           -- :: HGL.Graphic
 ) where
 
-import Array
-import qualified Graphics.HGL.Utils as HGL
+import Data.Array
+import qualified Graphics.HGL as HGL
 
 import AFRPPoint2 (Point2(..))
 
@@ -35,10 +35,10 @@ landscape =
     HGL.mkBrush (colorTable ! closeMountainColor) $ \cmcBrush ->
     HGL.mkBrush (colorTable ! groundColor) $ \groundBrush ->
     HGL.overGraphics
-	[ HGL.withBrush groundBrush $ HGL.polygon groundPoints,
+        [ HGL.withBrush groundBrush $ HGL.polygon groundPoints,
           HGL.withBrush cmcBrush    $ HGL.polygon cmPoints,
           HGL.withBrush dmcBrush    $ HGL.polygon dmPoints
-	]
+        ]
 
 
 -- Points defining the distant mountain chain.

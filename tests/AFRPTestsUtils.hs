@@ -2,9 +2,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:         AFRPTestsUtils					     *
-*       Purpose:        Test cases for utilities (AFRPUtilities)	     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Module:         AFRPTestsUtils                                       *
+*       Purpose:        Test cases for utilities (AFRPUtilities)             *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -128,17 +128,17 @@ dynDelayLine a0 =
               >>> rpSwitchZ [iPre a0]
               >>> arr (\as -> (last as, init as)))
     where
-	addDelay ds = ds ++ [last ds]
+        addDelay ds = ds ++ [last ds]
 
         delDelay [d] = [d]
         delDelay ds  = init ds
 
 utils_t6 :: [Int]
 utils_t6 = take 200 $ embed (dynDelayLine 0)
-			    (deltaEncode 0.1 (zip [1..] evSeq))
+                            (deltaEncode 0.1 (zip [1..] evSeq))
     where
-	evSeq = NoEvent : Event True : NoEvent : NoEvent : Event True :
-		NoEvent : NoEvent : Event False : evSeq
+        evSeq = NoEvent : Event True : NoEvent : NoEvent : Event True :
+                NoEvent : NoEvent : Event False : evSeq
 
 utils_t6r =
     [0,1,1,2,3,3,4,6,7,8,8,9,10,10,11,13,14,15,15,16,17,17,18,20,21,22,22,23,
@@ -156,9 +156,9 @@ utils_t7 :: [Double]
 utils_t7 = take 50 $ embed impulseIntegral
                            (deltaEncode 0.1 (zip (repeat 1.0) evSeq))
     where
-	evSeq = replicate 9 NoEvent ++ [Event 10.0]
-		++ replicate 9 NoEvent ++ [Event (-10.0)]
-		++ evSeq
+        evSeq = replicate 9 NoEvent ++ [Event 10.0]
+                ++ replicate 9 NoEvent ++ [Event (-10.0)]
+                ++ evSeq
 
 utils_t7r =
     [ 0.0,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8, 10.9,
@@ -172,11 +172,11 @@ utils_t8 :: [Double]
 utils_t8 = take 50 $ embed (provided (even . floor) integral (constant (-1)))
                            (deltaEncode 0.1 input)
     where
-	input = replicate 10 1
-		++ replicate 10 2
-		++ replicate 10 3
-		++ replicate 10 4
-		++ input
+        input = replicate 10 1
+                ++ replicate 10 2
+                ++ replicate 10 3
+                ++ replicate 10 4
+                ++ input
 
 utils_t8r =
     [-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0,
@@ -190,11 +190,11 @@ utils_t9 :: [Double]
 utils_t9 = take 50 $ embed (provided (odd . floor) integral (constant (-1)))
                            (deltaEncode 0.1 input)
     where
-	input = replicate 10 1
-		++ replicate 10 2
-		++ replicate 10 3
-		++ replicate 10 4
-		++ input
+        input = replicate 10 1
+                ++ replicate 10 2
+                ++ replicate 10 3
+                ++ replicate 10 4
+                ++ input
 
 utils_t9r =
     [ 0.0,  0.1,  0.2,  0.3,  0.4,  0.5,  0.6,  0.7,  0.8,  0.9,
@@ -208,12 +208,12 @@ utils_t10 :: [Event Double]
 utils_t10 = testSF1 snap
 
 utils_t10r =
-    [Event 0.0, NoEvent, NoEvent, NoEvent,	-- 0.0 s
-     NoEvent,   NoEvent, NoEvent, NoEvent,	-- 1.0 s
-     NoEvent,   NoEvent, NoEvent, NoEvent,	-- 2.0 s
-     NoEvent,   NoEvent, NoEvent, NoEvent,	-- 3.0 s
-     NoEvent,   NoEvent, NoEvent, NoEvent,	-- 4.0 s
-     NoEvent,   NoEvent, NoEvent, NoEvent,	-- 5.0 s
+    [Event 0.0, NoEvent, NoEvent, NoEvent,      -- 0.0 s
+     NoEvent,   NoEvent, NoEvent, NoEvent,      -- 1.0 s
+     NoEvent,   NoEvent, NoEvent, NoEvent,      -- 2.0 s
+     NoEvent,   NoEvent, NoEvent, NoEvent,      -- 3.0 s
+     NoEvent,   NoEvent, NoEvent, NoEvent,      -- 4.0 s
+     NoEvent,   NoEvent, NoEvent, NoEvent,      -- 5.0 s
      NoEvent]
 
 
@@ -221,12 +221,12 @@ utils_t11 :: [Event Double]
 utils_t11 = testSF1 (snapAfter 2.6)
 
 utils_t11r =
-    [NoEvent, NoEvent, NoEvent, NoEvent,	-- 0.0 s
-     NoEvent, NoEvent, NoEvent, NoEvent,	-- 1.0 s
-     NoEvent, NoEvent, NoEvent, Event 11.0,	-- 2.0 s
-     NoEvent, NoEvent, NoEvent, NoEvent,	-- 3.0 s
-     NoEvent, NoEvent, NoEvent, NoEvent,	-- 4.0 s
-     NoEvent, NoEvent, NoEvent, NoEvent,	-- 5.0 s
+    [NoEvent, NoEvent, NoEvent, NoEvent,        -- 0.0 s
+     NoEvent, NoEvent, NoEvent, NoEvent,        -- 1.0 s
+     NoEvent, NoEvent, NoEvent, Event 11.0,     -- 2.0 s
+     NoEvent, NoEvent, NoEvent, NoEvent,        -- 3.0 s
+     NoEvent, NoEvent, NoEvent, NoEvent,        -- 4.0 s
+     NoEvent, NoEvent, NoEvent, NoEvent,        -- 5.0 s
      NoEvent]
 
 
@@ -234,12 +234,12 @@ utils_t12 :: [Event Double]
 utils_t12 = testSF1 (sample 0.99)
 
 utils_t12r =
-    [NoEvent,    NoEvent, NoEvent, NoEvent,	-- 0.0 s
-     Event 4.0,  NoEvent, NoEvent, NoEvent,	-- 1.0 s
-     Event 8.0,  NoEvent, NoEvent, NoEvent,	-- 2.0 s
-     Event 12.0, NoEvent, NoEvent, NoEvent,	-- 3.0 s
-     Event 16.0, NoEvent, NoEvent, NoEvent,	-- 4.0 s
-     Event 20.0, NoEvent, NoEvent, NoEvent,	-- 5.0 s
+    [NoEvent,    NoEvent, NoEvent, NoEvent,     -- 0.0 s
+     Event 4.0,  NoEvent, NoEvent, NoEvent,     -- 1.0 s
+     Event 8.0,  NoEvent, NoEvent, NoEvent,     -- 2.0 s
+     Event 12.0, NoEvent, NoEvent, NoEvent,     -- 3.0 s
+     Event 16.0, NoEvent, NoEvent, NoEvent,     -- 4.0 s
+     Event 20.0, NoEvent, NoEvent, NoEvent,     -- 5.0 s
      Event 24.0]
 
 
@@ -247,12 +247,12 @@ utils_t13 :: [Event ()]
 utils_t13 = testSF1 (recur (after 0.99 ()))
 
 utils_t13r =
-    [NoEvent,  NoEvent, NoEvent, NoEvent,	-- 0.0 s
-     Event (), NoEvent, NoEvent, NoEvent,	-- 1.0 s
-     Event (), NoEvent, NoEvent, NoEvent,	-- 2.0 s
-     Event (), NoEvent, NoEvent, NoEvent,	-- 3.0 s
-     Event (), NoEvent, NoEvent, NoEvent,	-- 4.0 s
-     Event (), NoEvent, NoEvent, NoEvent,	-- 5.0 s
+    [NoEvent,  NoEvent, NoEvent, NoEvent,       -- 0.0 s
+     Event (), NoEvent, NoEvent, NoEvent,       -- 1.0 s
+     Event (), NoEvent, NoEvent, NoEvent,       -- 2.0 s
+     Event (), NoEvent, NoEvent, NoEvent,       -- 3.0 s
+     Event (), NoEvent, NoEvent, NoEvent,       -- 4.0 s
+     Event (), NoEvent, NoEvent, NoEvent,       -- 5.0 s
      Event ()]
 
 

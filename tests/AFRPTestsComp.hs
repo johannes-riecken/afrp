@@ -2,9 +2,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:         AFRPTestsComp					     *
-*       Purpose:        Test cases for (>>>)				     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Module:         AFRPTestsComp                                        *
+*       Purpose:        Test cases for (>>>)                                 *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *

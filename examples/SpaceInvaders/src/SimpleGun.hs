@@ -1,25 +1,24 @@
 {-# LANGUAGE Arrows #-}
+module SimpleGun (
+    simpleGunObject -- :: Object
+) where
+
+import System.Random
 {- $Id: SimpleGun.as,v 1.2 2003/11/10 21:28:58 antony Exp $
 ******************************************************************************
 *                              I N V A D E R S                               *
 *                                                                            *
-*       Module:		SimpleGun					     *
-*       Purpose:	A simple gun as a signal function        	     *
-*       Author:		Antony Courtney					     *
+*       Module:         SimpleGun                                            *
+*       Purpose:        A simple gun as a signal function                    *
+*       Author:         Antony Courtney                                      *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
 ******************************************************************************
 -}
 
-module SimpleGun (
-    simpleGunObject -- :: Object
-) where
-
-import qualified Random
-
 import AFRP
-import AFRPUtilities
+import qualified AFRPUtilities as AU
 import AFRPGeometry
 
 import PhysicalDimensions
@@ -51,7 +50,7 @@ simpleGun (Point2 x0 y0) = proc gi -> do
 
     -- basic physics:
     v <- integral -< clampAcc v ad
-    x <- (x0+) ^<< integral -< v
+    x <- (x0+) AU.^<< integral -< v
 
   fire <- lbp -< gi
   returnA -< SimpleGunState {
@@ -123,9 +122,9 @@ gun (Point2 x0 y0) = proc objIn -> do
 -- Ammunition magazine. Reloaded up to maximal
 -- capacity at constant rate.
 -- n ... Maximal and initial number of missiles.
--- f ..........	Reload rate.
--- input ......	Trigger.
--- output .....	Tuple:
+-- f .......... Reload rate.
+-- input ...... Trigger.
+-- output ..... Tuple:
 --   #1: Current number of missiles in magazine.
 --   #2: Missile fired event.
 magazine ::
@@ -134,11 +133,11 @@ magazine ::
 magazine n f = proc trigger -> do
   reload <- repeatedly (1/f) () -< ()
   (level,canFire)
-      <- accumHold (n,True) -<
+      <- AU.accumHold (n,True) -<
              (trigger `tag` dec)
              `lMerge` (reload `tag` inc)
   returnA -< (level,
-	      trigger `gate` canFire)
+              trigger `gate` canFire)
   where
     inc :: (Int,Bool) -> (Int, Bool)
     inc (l,_) | l < n = (l + 1, l > 0)
@@ -156,11 +155,11 @@ missile p0 v0 = proc oi -> do
         vp  <- iPre v0                     -< v
         ffi <- forceField                  -< (p, vp)
         v  <- (v0 ^+^) ^<< impulseIntegral -< (gravity, ffi)
-	p  <- (p0 .+^) ^<< integral        -< v
+        p  <- (p0 .+^) ^<< integral        -< v
     die <- after missileLifeSpan () -< ()
     returnA -< ObjOutput {
-	           ooObsObjState = oosMissile p v,
-		   ooKillReq     = oiHit oi `lMerge` die,
+                   ooObsObjState = oosMissile p v,
+                   ooKillReq     = oiHit oi `lMerge` die,
                    ooSpawnReq    = noEvent
                }
 
@@ -179,11 +178,11 @@ missile p0 v0 = proc oi -> do
 field :: Position2 -> Acceleration2
 field (Point2 x _) = vector2 (leftAcc - rightAcc) 0 ^+^ gravity
     where
-	leftAcc  = min (if x > worldXMin
+        leftAcc  = min (if x > worldXMin
                         then k / (x - worldXMin)^3
                         else maxAcc)
                        maxAcc
-	rightAcc = min (if x < worldXMax
+        rightAcc = min (if x < worldXMax
                         then k / (worldXMax - x)^3
                         else maxAcc)
                        maxAcc

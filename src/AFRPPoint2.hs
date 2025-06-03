@@ -4,9 +4,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:		AFRPPoint2					     *
-*       Purpose:	2D point abstraction (R^2).			     *
-*	Authors:	Henrik Nilsson and Antony Courtney		     *
+*       Module:         AFRPPoint2                                           *
+*       Purpose:        2D point abstraction (R^2).                          *
+*       Authors:        Henrik Nilsson and Antony Courtney                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -17,9 +17,9 @@ module AFRPPoint2 (
     module AFRPVectorSpace,
     module AFRPAffineSpace,
     module AFRPVector2,
-    Point2(..),	-- Non-abstract, instance of AffineSpace
-    point2X,	-- :: RealFloat a => Point2 a -> a
-    point2Y	-- :: RealFloat a => Point2 a -> a
+    Point2(..), -- Non-abstract, instance of AffineSpace
+    point2X,    -- :: RealFloat a => Point2 a -> a
+    point2Y     -- :: RealFloat a => Point2 a -> a
 ) where
 
 import AFRPVectorSpace

@@ -3,8 +3,8 @@
 *                                  A F R P                                   *
 *                                                                            *
 *       Module:         AFRPTests                                            *
-*       Purpose:        AFRP regression tests.				     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Purpose:        AFRP regression tests.                               *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -72,22 +72,22 @@ allGood = arr_tr
           && looplaws_tr
           && basicsf_tr
           && evsrc_tr
- 	  && coc_tr
- 	  && switch_tr
- 	  && kswitch_tr
- 	  && rswitch_tr
- 	  && pswitch_tr
- 	  && rpswitch_tr
- 	  && wfg_tr
-	  && accum_tr
- 	  && delay_tr
-	  && der_tr
-	  && loopPre_tr
-	  && loopIntegral_tr
-	  && react_tr
-	  && embed_tr
-	  && utils_tr
-	  && task_tr
+          && coc_tr
+          && switch_tr
+          && kswitch_tr
+          && rswitch_tr
+          && pswitch_tr
+          && rpswitch_tr
+          && wfg_tr
+          && accum_tr
+          && delay_tr
+          && der_tr
+          && loopPre_tr
+          && loopIntegral_tr
+          && react_tr
+          && embed_tr
+          && utils_tr
+          && task_tr
 
 
 all_trs =
@@ -106,8 +106,8 @@ all_trs =
       ("rswitch",      rswitch_trs),
       ("pswitch",      pswitch_trs),
       ("rpswitch",     rpswitch_trs),
-      ("wfg",	       wfg_trs),
-      ("accum",	       accum_trs),
+      ("wfg",          wfg_trs),
+      ("accum",        accum_trs),
       ("delay",        delay_trs),
       ("der",          der_trs),
       ("loopPre",      loopPre_trs),
@@ -122,7 +122,7 @@ all_trs =
 failedTests =
     [ format n i | (n, trs) <- all_trs, (i, tr) <- zip [0..] trs, not tr ]
     where
-	format n i = "Test " ++ n ++ "_t" ++ show i ++ " failed."
+        format n i = "Test " ++ n ++ "_t" ++ show i ++ " failed."
 
 
 runRegTests :: IO ()
@@ -130,9 +130,9 @@ runRegTests = do
     putStrLn ""
     putStrLn "Running the AFRP regression tests ..."
     if allGood then
-	putStrLn "All tests succeeded!"
+        putStrLn "All tests succeeded!"
      else
-	forAll failedTests putStrLn
+        forAll failedTests putStrLn
 
 
 runSpaceTests :: IO ()
@@ -158,13 +158,13 @@ runSpaceTests = do
     rst "accum" 0 accum_st0 accum_st0r
     rst "accum" 1 accum_st1 accum_st1r
     where
-	rst n i st str = do
-	    putStrLn ("Running " ++ n ++ "_st" ++ show i ++ " ...")
-	    if st ~= str then
-		putStrLn "Success!"
-	     else
-		-- We probably won't get here in case of a (space) failure ...
-		putStrLn "Failure!"
+        rst n i st str = do
+            putStrLn ("Running " ++ n ++ "_st" ++ show i ++ " ...")
+            if st ~= str then
+                putStrLn "Success!"
+             else
+                -- We probably won't get here in case of a (space) failure ...
+                putStrLn "Failure!"
 
 -- AC: here because I had trouble running ghci:
 -- fixTest :: IO ()

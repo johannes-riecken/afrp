@@ -3,8 +3,8 @@
 *                                  A F R P                                   *
 *                                                                            *
 *       Module:         AFRPMergeableRecord                                  *
-*       Purpose:        Framework for record merging.			     *
-*	Authors:	Antony Courtney and Henrik Nilsson		     *
+*       Purpose:        Framework for record merging.                        *
+*       Authors:        Antony Courtney and Henrik Nilsson                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -45,7 +45,7 @@
 
 module AFRPMergeableRecord (
     MergeableRecord(..),
-    MR,			-- Abstract
+    MR,                 -- Abstract
     mrMake,
     (~+~),
     mrMerge,

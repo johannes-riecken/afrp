@@ -4,9 +4,9 @@
 ******************************************************************************
 *                                  A F R P                                   *
 *                                                                            *
-*       Module:		AFRPVector2					     *
-*       Purpose:	2D vector abstraction (R^2).			     *
-*	Authors:	Henrik Nilsson and Antony Courtney		     *
+*       Module:         AFRPVector2                                          *
+*       Purpose:        2D vector abstraction (R^2).                         *
+*       Authors:        Henrik Nilsson and Antony Courtney                   *
 *                                                                            *
 *             Copyright (c) Yale University, 2003                            *
 *                                                                            *
@@ -15,16 +15,16 @@
 
 module AFRPVector2 (
     module AFRPVectorSpace,
-    Vector2,		-- Abstract, instance of VectorSpace
-    vector2,		-- :: RealFloat a => a -> a -> Vector2 a
-    vector2X,		-- :: RealFloat a => Vector2 a -> a
-    vector2Y,		-- :: RealFloat a => Vector2 a -> a
-    vector2XY,		-- :: RealFloat a => Vector2 a -> (a, a)
-    vector2Polar,	-- :: RealFloat a => a -> a -> Vector2 a
-    vector2Rho,		-- :: RealFloat a => Vector2 a -> a
-    vector2Theta,	-- :: RealFloat a => Vector2 a -> a
-    vector2RhoTheta,	-- :: RealFloat a => Vector2 a -> (a, a)
-    vector2Rotate 	-- :: RealFloat a => a -> Vector2 a -> Vector2 a
+    Vector2,            -- Abstract, instance of VectorSpace
+    vector2,            -- :: RealFloat a => a -> a -> Vector2 a
+    vector2X,           -- :: RealFloat a => Vector2 a -> a
+    vector2Y,           -- :: RealFloat a => Vector2 a -> a
+    vector2XY,          -- :: RealFloat a => Vector2 a -> (a, a)
+    vector2Polar,       -- :: RealFloat a => a -> a -> Vector2 a
+    vector2Rho,         -- :: RealFloat a => Vector2 a -> a
+    vector2Theta,       -- :: RealFloat a => Vector2 a -> a
+    vector2RhoTheta,    -- :: RealFloat a => Vector2 a -> (a, a)
+    vector2Rotate       -- :: RealFloat a => a -> Vector2 a -> Vector2 a
 ) where
 
 import AFRPVectorSpace
