@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes #-}
 {- $Id: AFRPTask.hs,v 1.6 2003/11/10 21:28:58 antony Exp $
 ******************************************************************************
 *                                  A F R P                                   *
@@ -31,6 +32,8 @@ module AFRPTask (
 import AFRP
 import AFRPUtilities (snap)
 import AFRPDiagnostics
+import Control.Applicative (Applicative(..)) -- Added import
+-- import Control.Monad.Fix (MonadFix(..))
 
 infixl 0 `timeOut`, `abortWhen`, `repeatUntil`
 
@@ -87,12 +90,19 @@ taskToSF tk = runTask tk
 
 
 ------------------------------------------------------------------------------
--- Monad instance
+-- Functor, Applicative, and Monad instances
 ------------------------------------------------------------------------------
 
+instance Functor (Task a b) where
+    fmap f (Task task) = Task (\k -> task (k . f))
+
+instance Applicative (Task a b) where
+    pure x = Task (\k -> k x)
+    (Task fTask) <*> (Task xTask) = Task (\k -> fTask (\f -> xTask (k . f)))
+
 instance Monad (Task a b) where
-    tk >>= f = Task (\k -> (unTask tk) (\c -> unTask (f c) k))
-    return x = Task (\k -> k x)
+    return x = Task (\k -> k x) -- return is pure for Applicative
+    (Task task) >>= f = Task (\k -> task (\c -> unTask (f c) k))
 
 {-
 Let's check the monad laws:
@@ -127,6 +137,13 @@ Let's check the monad laws:
 No surprises (obviously, since this is essentially just the CPS monad).
 -}
 
+-- Not clear how to do this while avoiding an dependency on SF
+-- internally. But this is OK as long as SF is not made abstract.
+-- For now, we can just define it in terms of bind and return.
+-- instance MonadFix (Task a b) where
+--     mfix f = Task (\k -> SF (\a -> 첫((sfTF (taskBody (f x))) a))
+--       where Task taskBody = f x
+--             x             = error "mfix for Task should not force the value"
 
 ------------------------------------------------------------------------------
 -- Basic tasks

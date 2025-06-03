@@ -87,7 +87,7 @@ module AFRPUtilities (
 ) where
 
 import AFRPDiagnostics
-import AFRP
+import AFRP hiding ((^>>), (>>^), (^<<), (<<^))
 
 
 infixr 1 ^<<, ^>>
