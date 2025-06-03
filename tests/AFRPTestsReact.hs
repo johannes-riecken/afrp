@@ -52,7 +52,7 @@ react_t0 = unsafePerformIO $ do
     reactimate init sense actuate (arr dup >>> second integral)
     outputs <- readIORef outputsr
     return (take 25 (reverse outputs))
-    
+
 
 react_t0r :: [(Double, Double)]
 react_t0r = [

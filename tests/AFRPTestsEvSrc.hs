@@ -166,7 +166,7 @@ evsrc_t9r =
 evsrc_t10 :: [Event ()]
 evsrc_t10 = testSF1 (localTime >>> arr (>=0) >>> edge)
 
-evsrc_t10r = 
+evsrc_t10r =
     [NoEvent, NoEvent, NoEvent, NoEvent,	-- 0.0 s
      NoEvent, NoEvent, NoEvent, NoEvent,	-- 1.0 s
      NoEvent, NoEvent, NoEvent, NoEvent,	-- 2.0 s
@@ -199,7 +199,7 @@ evsrc_isEdge True  False = Nothing
 evsrc_t12 :: [Event ()]
 evsrc_t12 = testSF1 (localTime >>> arr (>=0) >>> edgeBy evsrc_isEdge False)
 
-evsrc_t12r = 
+evsrc_t12r =
     [Event (), NoEvent, NoEvent, NoEvent,	-- 0.0 s
      NoEvent,  NoEvent, NoEvent, NoEvent,	-- 1.0 s
      NoEvent,  NoEvent, NoEvent, NoEvent,	-- 2.0 s
@@ -370,7 +370,7 @@ evsrc_t23r =
 
 evsrc_t24 :: [Event Int]
 -- Drop 5 events to get rid of the event at 4.0 s which may or may not happen
--- exactly there. 
+-- exactly there.
 evsrc_t24 = testSF1 (repeatedly 0.8 42 >>> dropEvents 5)
 
 evsrc_t24r :: [Event Int]

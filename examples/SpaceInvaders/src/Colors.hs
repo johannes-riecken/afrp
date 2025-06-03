@@ -81,7 +81,7 @@ data Color =
     | Purple
     deriving (Eq, Ord, Bounded, Enum, Ix)
 
-colorList = 
+colorList =
     [
         -- Basic colours.
         (Black,			RGB   0   0   0),

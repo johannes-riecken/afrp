@@ -301,7 +301,7 @@ mtgd = proc ics -> do
 		sameOrder [] _  = False
 		sameOrder _  [] = False
 		sameOrder ((i,_):ics) ((i',_):ics')
-		    | i == i'   = sameOrder ics ics' 
+		    | i == i'   = sameOrder ics ics'
 		    | otherwise = False
 
 	updateTGDs is (MTGDCol iitgs) = MTGDCol $

@@ -66,11 +66,11 @@
 --     ndIntegral :: VectorSpace a s => SF a a
 --     ndIntegral = (\ _ a' dt v -> v ^+^ realToFrac dt *^ a') `iterFrom`
 --                  zeroVector
--- 
+--
 --     derivative :: VectorSpace a s => SF a a
 --     derivative = (\ a a' dt _ -> (a' ^-^ a) ^/ realToFrac dt) `iterFrom`
 --                  zeroVector
---  
+--
 --     iterFrom :: (a -> a -> DTime -> b -> b) -> b -> SF a b
 --     f `iterFrom` b = SF (iterAux b) where
 --         iterAux b a = (SFTIVar (\ dt a' -> iterAux (f a a' dt b) a'), b)
@@ -215,7 +215,7 @@ module AFRP (
     rMerge,		-- :: Event a -> Event a -> Event a,	infixl 6
     merge,		-- :: Event a -> Event a -> Event a,	infixl 6
     mergeBy,		-- :: (a -> a -> a) -> Event a -> Event a -> Event a
-    mapMerge,           -- :: (a -> c) -> (b -> c) -> (a -> b -> c) 
+    mapMerge,           -- :: (a -> c) -> (b -> c) -> (a -> b -> c)
                         --    -> Event a -> Event b -> Event c
     mergeEvents,        -- :: [Event a] -> Event a
     catEvents,		-- :: [Event a] -> Event [a]
@@ -311,7 +311,7 @@ data SF a b = SF {sfTF :: a -> Transition a b}
 -- than using SFArr in the first place.
 -- (Naming: "TIVar" stands for "time-input-variable".)
 
-data SF' a b 
+data SF' a b
     = SFConst {sfTF' :: DTime -> a -> Transition a b, sfCVal :: b}
     | SFArr   {sfTF' :: DTime -> a -> Transition a b, sfAFun :: a -> b}
     | SFTIVar {sfTF' :: DTime -> a -> Transition a b}
@@ -446,7 +446,7 @@ firstPrim (SF {sfTF = tf10}) = SF {sfTF = tf0}
     where
         tf0 ~(a0, c0) = (fpAux sf1, (b0, c0))
 	    where
-		(sf1, b0) = tf10 a0 
+		(sf1, b0) = tf10 a0
 
 	fpAux (SFConst {sfCVal = b}) = sfArr (\(~(_, c)) -> (b, c))
 	fpAux (SFArr   {sfAFun = f}) = sfArr (\(~(a, c)) -> (f a, c))
@@ -454,7 +454,7 @@ firstPrim (SF {sfTF = tf10}) = SF {sfTF = tf0}
 	    where
 	        tf dt ~(a, c) = (fpAux sf1', (b, c))
 		    where
-			(sf1', b) = (sfTF' sf1) dt a 
+			(sf1', b) = (sfTF' sf1) dt a
 
 
 -- Mirror image of first.
@@ -463,7 +463,7 @@ secondPrim (SF {sfTF = tf10}) = SF {sfTF = tf0}
     where
         tf0 ~(c0, a0) = (spAux sf1, (c0, b0))
 	    where
-		(sf1, b0) = tf10 a0 
+		(sf1, b0) = tf10 a0
 
 	spAux (SFConst {sfCVal = b}) = sfArr (\(~(c, _)) -> (c, b))
 	spAux (SFArr   {sfAFun = f}) = sfArr (\(~(c, a)) -> (c, f a))
@@ -471,7 +471,7 @@ secondPrim (SF {sfTF = tf10}) = SF {sfTF = tf0}
 	    where
 	        tf dt ~(c, a) = (spAux sf1', (c, b))
 		    where
-			(sf1', b) = (sfTF' sf1) dt a 
+			(sf1', b) = (sfTF' sf1) dt a
 
 
 -- Parallel composition.
@@ -485,8 +485,8 @@ parSplitPrim (SF {sfTF = tf10}) (SF {sfTF = tf20}) = SF {sfTF = tf0}
     where
 	tf0 ~(a0, c0) = (psAux sf1 sf2, (b0, d0))
 	    where
-		(sf1, b0) = tf10 a0 
-		(sf2, d0) = tf20 c0 
+		(sf1, b0) = tf10 a0
+		(sf2, d0) = tf20 c0
 
 	psAux sf1@(SFConst {}) sf2              = psAuxC1 (sfCVal sf1) sf2
 	psAux sf1              sf2@(SFConst {}) = psAuxC2 sf1 (sfCVal sf2)
@@ -537,8 +537,8 @@ parFanOutPrim (SF {sfTF = tf10}) (SF {sfTF = tf20}) = SF {sfTF = tf0}
     where
 	tf0 a0 = (pfoAux sf1 sf2, (b0, c0))
 	    where
-		(sf1, b0) = tf10 a0 
-		(sf2, c0) = tf20 a0 
+		(sf1, b0) = tf10 a0
+		(sf2, c0) = tf20 a0
 
 	pfoAux sf1@(SFConst {}) sf2              = pfoAuxC1 (sfCVal sf1) sf2
 	pfoAux sf1              sf2@(SFConst {}) = pfoAuxC2 sf1 (sfCVal sf2)
@@ -694,7 +694,7 @@ repeatedly :: Time -> b -> SF a (Event b)
 repeatedly q x | q > 0 = afterEach qxs
                | otherwise = usrErr "AFRP" "repeatedly" "Non-positive period."
     where
-        qxs = (q,x):qxs        
+        qxs = (q,x):qxs
 
 
 -- Event source with consecutive occurrences at the given intervals.
@@ -1032,7 +1032,7 @@ parAux :: Functor col =>
     -> SF' a (col c)
 parAux rf sfs = SFTIVar {sfTF' = tf}
     where
-	tf dt a = 
+	tf dt a =
 	    let bsfs  = rf a sfs
 		sfcs' = fmap (\(b, sf) -> (sfTF' sf) dt b) bsfs
 		sfs'  = fmap fst sfcs'
@@ -1197,7 +1197,7 @@ accumBy f b_init = switch (never &&& identity) $ \a -> abAux (f b_init a)
 accumBy :: (b -> a -> b) -> b -> SF (Event a) (Event b)
 accumBy f b_init = SF {sfTF = tf0}
     where
-        tf0 NoEvent    = (abAux b_init, NoEvent) 
+        tf0 NoEvent    = (abAux b_init, NoEvent)
         tf0 (Event a0) = let b' = f b_init a0
 		         in (abAux b', Event b')
 
@@ -1212,7 +1212,7 @@ accumBy f b_init = SF {sfTF = tf0}
 accumFilter :: (c -> a -> (c, Maybe b)) -> c -> SF (Event a) (Event b)
 accumFilter f c_init = SF {sfTF = tf0}
     where
-        tf0 NoEvent    = (afAux c_init, NoEvent) 
+        tf0 NoEvent    = (afAux c_init, NoEvent)
         tf0 (Event a0) = case f c_init a0 of
 		             (c', Nothing) -> (afAux c', NoEvent)
 			     (c', Just b0) -> (afAux c', Event b0)
@@ -1445,7 +1445,7 @@ data ReactState a b = ReactState {
     rsSF :: SF' a b,
     rsA :: a,
     rsB :: b
-  }	      
+  }
 
 type ReactHandle a b = IORef (ReactState a b)
 
@@ -1454,7 +1454,7 @@ reactInit :: IO a -- init
              -> (ReactHandle a b -> Bool -> b -> IO Bool) -- actuate
              -> SF a b
              -> IO (ReactHandle a b)
-reactInit init actuate (SF {sfTF = tf0}) = 
+reactInit init actuate (SF {sfTF = tf0}) =
   do a0 <- init
      let (sf,b0) = tf0 a0
      -- TODO: really need to fix this interface, since right now we
@@ -1468,7 +1468,7 @@ reactInit init actuate (SF {sfTF = tf0}) =
 react :: ReactHandle a b
       -> (DTime,Maybe a)
       -> IO Bool
-react rh (dt,ma') = 
+react rh (dt,ma') =
   do rs@(ReactState {rsActuate = actuate,
 	             rsSF = sf,
 		     rsA = a,
@@ -1477,7 +1477,7 @@ react rh (dt,ma') =
          (sf',b') = (sfTF' sf) dt a'
      writeIORef rh (rs {rsSF = sf',rsA = a',rsB = b'})
      done <- actuate rh True b'
-     return done     
+     return done
 
 
 ------------------------------------------------------------------------------
@@ -1556,4 +1556,4 @@ deltaEncodeBy eq dt (a0:as) = (a0, zip (repeat dt) (debAux a0 as))
     where
 	debAux a_prev []                     = []
 	debAux a_prev (a:as) | a `eq` a_prev = Nothing : debAux a as
-                             | otherwise     = Just a  : debAux a as 
+                             | otherwise     = Just a  : debAux a as

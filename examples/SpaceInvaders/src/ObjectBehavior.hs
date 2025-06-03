@@ -60,7 +60,7 @@ gun (Point2 x0 y0) = proc (ObjInput {oiGameInput = gi}) -> do
 	           ooObsObjState = oosGun (Point2 x y0) (vector2 v 0) level,
 		   ooKillReq     = noEvent,
                    ooSpawnReq    =
-                       fire `tag` [missile (Point2 x (y0 + (gunHeight/2))) 
+                       fire `tag` [missile (Point2 x (y0 + (gunHeight/2)))
                                            (vector2 v missileInitialSpeed)]
                }
 
@@ -73,16 +73,16 @@ gun (Point2 x0 y0) = proc (ObjInput {oiGameInput = gi}) -> do
 -- output .....	Tuple:
 --   #1: Current number of missiles in magazine.
 --   #2: Missile fired event.
-magazine :: 
-  Int -> Frequency 
+magazine ::
+  Int -> Frequency
       -> SF (Event ()) (Int, Event ())
 magazine n f = proc trigger -> do
   reload <- repeatedly (1/f) () -< ()
-  (level,canFire) 
-      <- accumHold (n,True) -< 
+  (level,canFire)
+      <- accumHold (n,True) -<
              (trigger `tag` dec)
              `lMerge` (reload `tag` inc)
-  returnA -< (level, 
+  returnA -< (level,
 	      trigger `gate` canFire)
   where
     inc :: (Int,Bool) -> (Int, Bool)
@@ -159,10 +159,10 @@ alien :: RandomGen g => g -> Position2 -> Velocity -> Object
 alien g p0 vyd = proc oi -> do
     rec
 	-- Pick a desired horizontal position.
-        rx     <- noiseR (worldXMin, worldXMax) g -< () 
+        rx     <- noiseR (worldXMin, worldXMax) g -< ()
         sample <- occasionally g 5 ()             -< ()
-        xd     <- hold (point2X p0)               -< sample `tag` rx    
-	
+        xd     <- hold (point2X p0)               -< sample `tag` rx
+
         -- Controller. Control constants not optimized. Who says aliens know
 	-- anything about control theory?
         let axd = 5 * (xd - point2X p) - 3 * (vector2X v)

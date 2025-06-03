@@ -35,7 +35,7 @@ module AFRPUtilities (
 -- General arrow utilities
     (^>>),		-- :: Arrow a => (b -> c) -> a c d -> a b d
     (>>^),		-- :: Arrow a => a b c -> (c -> d) -> a b d
-    (^<<),		-- :: Arrow a => (c -> d) -> a b c -> a b d 
+    (^<<),		-- :: Arrow a => (c -> d) -> a b c -> a b d
     (<<^),		-- :: Arrow a => a c d -> (b -> c) -> a b d
 
 -- Liftings
@@ -106,7 +106,7 @@ f ^>> a = arr f >>> a
 a >>^ f = a >>> arr f
 
 
-(^<<) :: Arrow a => (c -> d) -> a b c -> a b d 
+(^<<) :: Arrow a => (c -> d) -> a b c -> a b d
 f ^<< a = arr f <<< a
 
 

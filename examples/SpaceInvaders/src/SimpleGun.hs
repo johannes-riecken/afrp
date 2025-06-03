@@ -58,7 +58,7 @@ simpleGun (Point2 x0 y0) = proc gi -> do
                sgsPos = (Point2 x y0),
                sgsVel = (vector2 v 0),
                sgsFired = fire
-             }                 
+             }
 
 ------------------------------------------------------------------------------
 -- Support
@@ -67,7 +67,7 @@ simpleGun (Point2 x0 y0) = proc gi -> do
 -- Compute actual acceleration from
 -- desired acceleration by setting
 -- hard limits on acceleration and velocity:
-clampAcc v ad = 
+clampAcc v ad =
   let a = symLimit gunAccMax ad
   in if (-gunSpeedMax) <= v && v <= gunSpeedMax
         || v < (-gunSpeedMax) && a > 0
@@ -108,14 +108,14 @@ gun (Point2 x0 y0) = proc objIn -> do
     x <- (x0+) ^<< integral -< v
 
   fire <- lbp -< gi
-  returnA -< 
+  returnA -<
     ObjOutput {
-      ooObsObjState = oosGun (Point2 x y0) 
+      ooObsObjState = oosGun (Point2 x y0)
                              (vector2 v 0),
       ooKillReq     = noEvent,
-      ooSpawnReq    = 
-        fire `tag` 
-          [missile (Point2 x (y0 + (gunHeight/2))) 
+      ooSpawnReq    =
+        fire `tag`
+          [missile (Point2 x (y0 + (gunHeight/2)))
                    (vector2 v missileInitialSpeed)]
     }
 -}
@@ -128,16 +128,16 @@ gun (Point2 x0 y0) = proc objIn -> do
 -- output .....	Tuple:
 --   #1: Current number of missiles in magazine.
 --   #2: Missile fired event.
-magazine :: 
-  Int -> Frequency 
+magazine ::
+  Int -> Frequency
       -> SF (Event ()) (Int, Event ())
 magazine n f = proc trigger -> do
   reload <- repeatedly (1/f) () -< ()
-  (level,canFire) 
-      <- accumHold (n,True) -< 
+  (level,canFire)
+      <- accumHold (n,True) -<
              (trigger `tag` dec)
              `lMerge` (reload `tag` inc)
-  returnA -< (level, 
+  returnA -< (level,
 	      trigger `gate` canFire)
   where
     inc :: (Int,Bool) -> (Int, Bool)

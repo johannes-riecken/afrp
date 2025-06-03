@@ -230,7 +230,7 @@ mergeBy resolve (Event l)    (Event r)    = Event (resolve l r)
 
 
 -- A generic event merge utility:
-mapMerge :: (a -> c) -> (b -> c) -> (a -> b -> c) 
+mapMerge :: (a -> c) -> (b -> c) -> (a -> b -> c)
 	    -> Event a -> Event b -> Event c
 mapMerge _  _  _   NoEvent   NoEvent = NoEvent
 mapMerge lf _  _   (Event l) NoEvent = Event (lf l)

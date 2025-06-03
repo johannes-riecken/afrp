@@ -40,7 +40,7 @@ der_t0r =
 -}
 
 der_t0r :: [Double]
-der_t0r = take der_N $ 
+der_t0r = take der_N $
           [2 * pi * cos (2 * pi * t) | t <- [0.0, der_step ..]]
 
 -- We're happy if we are in the right ball park.

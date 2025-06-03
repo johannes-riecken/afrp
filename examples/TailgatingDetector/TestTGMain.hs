@@ -39,7 +39,7 @@ testVideo t_max = filter (isEvent . snd) $
                        /= (map fst (sortBy comparePos v)) then
 			Just v
 		    else
-			Nothing 
+			Nothing
 
 	comparePos (_, (p1, _)) (_, (p2, _)) = compare p1 p2
 
@@ -75,7 +75,7 @@ testMCT t_max = filter (isEvent . snd) $
                        /= (map fst (sortBy comparePos v)) then
 			Just v
 		    else
-			Nothing 
+			Nothing
 
 	comparePos (_, (p1, _)) (_, (p2, _)) = compare p1 p2
 
@@ -91,7 +91,7 @@ testMTGD t_max = filter (isEvent . fst . snd) $
 			         s           <- uavStatus      -< ()
                                  h           <- highway        -< ()
                                  (v, ect)    <- mkVideoAndTrackers -< (h, s)
-                                 (ics, etgs) <- findTailgaters -< (v,s,ect) 
+                                 (ics, etgs) <- findTailgaters -< (v,s,ect)
 				 etgs        <- mtgd           -< ics
 			         returnA -< (etgs, ics)))
 	        (deltaEncode smplPer (repeat ()))

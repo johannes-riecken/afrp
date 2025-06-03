@@ -38,16 +38,16 @@ instance REq Double where
     x ~= y = abs (x - y) < epsilon	-- A relative measure should be used.
 
 instance REq Int where
-    (~=) = (==) 
+    (~=) = (==)
 
 instance REq Integer where
-    (~=) = (==) 
+    (~=) = (==)
 
 instance REq Bool where
-    (~=) = (==) 
+    (~=) = (==)
 
 instance REq Char where
-    (~=) = (==) 
+    (~=) = (==)
 
 instance REq () where
     () ~= () = True
@@ -109,7 +109,7 @@ testSF2 sf = take 25 (embed sf (deltaEncodeBy (~=) 0.25 input))
 
 
 ------------------------------------------------------------------------------
--- Test harness for space behaviour 
+-- Test harness for space behaviour
 ------------------------------------------------------------------------------
 
 {-

@@ -52,11 +52,11 @@ main :: IO ()
 main = do
   pname <- getProgName
   args <- getArgs
-  let eFlags = if (length args) < 1 
+  let eFlags = if (length args) < 1
                  then (Left allFlags)
                  else parseArgs defFlags args
   case eFlags of
-    (Left tFlags) ->  
+    (Left tFlags) ->
       if (tHelp tFlags)
         then usage pname Nothing
         else do

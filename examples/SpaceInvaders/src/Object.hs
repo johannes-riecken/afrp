@@ -73,7 +73,7 @@ data ObjOutput = ObjOutput {
 -- the fields (e.g. if a bounding box field were added) might be dependent on
 -- others. The reason ObsObjState is not exported abstractly is that it is
 -- convenient to inspect it by pattern matching.
--- 
+--
 -- To avoid space leaks, all fields (except possibly dependent ones) are
 -- strict.
 
@@ -102,7 +102,7 @@ data ObsObjState =
 ------------------------------------------------------------------------------
 
 instance Forceable ObsObjState where
-    -- If non-strict fields: oosNonStrict1 obj `seq` ... `seq` obj 
+    -- If non-strict fields: oosNonStrict1 obj `seq` ... `seq` obj
     force obj = obj
 
 

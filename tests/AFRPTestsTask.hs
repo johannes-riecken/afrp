@@ -85,7 +85,7 @@ task_t3 = testSF1 (runTask (do
 	    forEver ((mkTask (constant 2.0 >>> integral &&& never))
 	             `timeOut` 1.5)
 
-task_t3r :: [Either Double ()]	    
+task_t3r :: [Either Double ()]
 task_t3r =
     [Left 0.0,     Left 0.5,     Left 1.0,     Left 1.5,	-- 0.0 s
      Left 2.0,     Left 2.5,     Left 0.0,     Left 0.5,	-- 1.0 s

@@ -25,7 +25,7 @@ pixelsPerMeter :: InvaderReal
 pixelsPerMeter = 0.5
 
 pixelsToMeters :: Int -> Length
-pixelsToMeters p = (fromIntegral p) / pixelsPerMeter 
+pixelsToMeters p = (fromIntegral p) / pixelsPerMeter
 
 metersToPixels :: Length -> Int
 metersToPixels m = round (m * pixelsPerMeter)
@@ -70,9 +70,9 @@ worldWestWall  = worldXMin + 0.2
 
 {-
 pointToPositionT :: Transform2
-pointToPositionT = translate2 (vector2XY worldXMin worldYMax) `compose2` 
-                   uscale2 (1 / pixelsPerMeter) `compose2` 
-                   mirrorY2 
+pointToPositionT = translate2 (vector2XY worldXMin worldYMax) `compose2`
+                   uscale2 (1 / pixelsPerMeter) `compose2`
+                   mirrorY2
 -}
 
 
