@@ -54,7 +54,7 @@ main = do
 
 -- Change name to "game"? What's now "game" would become "gameRound".
 -- What about "game'"?
-restartingGame :: RandomGen g => g -> SF GameInput (Int, [ObsObjState])
+restartingGame :: (RandomGen g, SplitGen g) => g -> SF GameInput (Int, [ObsObjState])
 restartingGame g = rgAux g nAliens0 vydAlien0 0
     where
         nAliens0 = 2
@@ -66,14 +66,14 @@ restartingGame g = rgAux g nAliens0 vydAlien0 0
                 Left score' -> rgAux g'' (nAliens + 1) (vydAlien - 10) score'
                 Right finalScore -> rgAux g'' nAliens0 vydAlien0 0
             where
-                (g', g'') = split g
+                (g', g'') = splitGen g
 
 
 -- How to arrange for splitting of g in general if we have spawning of aliens
 -- "inside" the game? The spawner should
 -- keep control over the supply of random generators.
 
-game :: RandomGen g => g -> Int -> Velocity -> Score ->
+game :: (RandomGen g, SplitGen g) => g -> Int -> Velocity -> Score ->
         SF GameInput ((Int, [ObsObjState]), Event (Either Score Score))
 game g nAliens vydAlien score0 = proc gi -> do
     -- One could argue that feeding back only the ObsObjState part would
@@ -115,7 +115,7 @@ game g nAliens vydAlien score0 = proc gi -> do
         mkAliens g x y n | n > 0 = alien g' (Point2 x y) vydAlien
                                    : mkAliens g'' (x + d) y (n - 1)
             where
-                (g', g'') = split g
+                (g', g'') = splitGen g
 
         aliensDied :: IL ObjOutput -> Event (Score -> Score)
         aliensDied oos =

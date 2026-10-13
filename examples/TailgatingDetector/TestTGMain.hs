@@ -14,7 +14,7 @@
 
 module Main where
 
-import List (sortBy)
+import Data.List (sortBy)
 
 import AFRP
 import AFRPUtilities
@@ -28,7 +28,7 @@ import TailgatingDetector
 testVideo :: Time -> [(Time, Event Video)]
 testVideo t_max = filter (isEvent . snd) $
                   takeWhile (\(t, _) -> t <= t_max) $
-                  embed (localTime &&& (videoAndTrackers >>^ fst)
+                  embed (localTime &&& (videoAndTrackers AFRP.>>^ fst)
                          >>> filterVideo)
                   (deltaEncode smplPer (repeat ()))
     where

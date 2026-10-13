@@ -101,7 +101,7 @@ instance Applicative (Task a b) where
     (Task fTask) <*> (Task xTask) = Task (\k -> fTask (\f -> xTask (k . f)))
 
 instance Monad (Task a b) where
-    return x = Task (\k -> k x) -- return is pure for Applicative
+    -- return x = Task (\k -> k x) -- return is pure for Applicative
     (Task task) >>= f = Task (\k -> task (\c -> unTask (f c) k))
 
 {-

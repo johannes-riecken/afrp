@@ -19,13 +19,7 @@ import System.Random
 ******************************************************************************
 -}
 
-module ObjectBehavior (
-    gun,        -- :: Position2 -> Object
-    missile,    -- :: Position2 -> Velocity2 -> Object
-    alien       -- :: RandomGen g => g -> Position2 -> Object
-) where
-
-import qualified Random
+import qualified System.Random as Random
 
 import AFRP
 import AFRPUtilities
@@ -57,7 +51,7 @@ gun (Point2 x0 y0) = proc (ObjInput {oiGameInput = gi}) -> do
                                 || v > gunSpeedMax && a < 0
                              then a
                              else 0
-        x <- (x0+) AU.^<< integral -< v
+        x <- (x0+) AFRPUtilities.^<< integral -< v
 
     -- Fire mechanism and ammunition level.
     trigger       <- lbp             -< gi
@@ -86,7 +80,7 @@ magazine ::
 magazine n f = proc trigger -> do
   reload <- repeatedly (1/f) () -< ()
   (level,canFire)
-      <- AU.accumHold (n,True) -<
+      <- AFRPUtilities.accumHold (n,True) -<
              (trigger `tag` dec)
              `lMerge` (reload `tag` inc)
   returnA -< (level,
@@ -140,8 +134,8 @@ missile p0 v0 = proc oi -> do
         -- Basic physics
         vp  <- iPre v0                     -< v
         ffi <- forceField                  -< (p, vp)
-        v  <- (v0 ^+^) ^<< impulseIntegral -< (gravity, ffi)
-        p  <- (p0 .+^) ^<< integral        -< v
+        v  <- (v0 ^+^) AFRPUtilities.^<< impulseIntegral -< (gravity, ffi)
+        p  <- (p0 .+^) AFRPUtilities.^<< integral        -< v
     die <- after missileLifeSpan () -< ()
     returnA -< ObjOutput {
                    ooObsObjState = oosMissile p v,
@@ -181,8 +175,8 @@ alien g p0 vyd = proc oi -> do
         let a = vector2Polar (min alienAccMax (vector2Rho ad)) h
         vp  <- iPre v0                      -< v
         ffi <- forceField                   -< (p, vp)
-        v   <- (v0 ^+^) ^<< impulseIntegral -< (gravity ^+^ a, ffi)
-        p   <- (p0 .+^) ^<< integral        -< v
+        v   <- (v0 ^+^) AFRPUtilities.^<< impulseIntegral -< (gravity ^+^ a, ffi)
+        p   <- (p0 .+^) AFRPUtilities.^<< integral        -< v
 
         -- Shields
         sl  <- shield -< oiHit oi
@@ -201,7 +195,7 @@ shield :: SF (Event ()) ShieldLevel
 shield = proc hit -> do
     rec
         let rechargeRate = if sl < slMax then slMax / 10 else 0
-        sl <- (slMax +) ^<< impulseIntegral -< (rechargeRate, hit `tag` damage)
+        sl <- (slMax +) AFRPUtilities.^<< impulseIntegral -< (rechargeRate, hit `tag` damage)
     returnA -< sl
     where
         slMax  = 100

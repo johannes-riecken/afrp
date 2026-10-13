@@ -154,7 +154,7 @@ missile p0 v0 = proc oi -> do
         -- Basic physics
         vp  <- iPre v0                     -< v
         ffi <- forceField                  -< (p, vp)
-        v  <- (v0 ^+^) ^<< impulseIntegral -< (gravity, ffi)
+        v  <- (v0 ^+^) ^<< AU.impulseIntegral -< (gravity, ffi)
         p  <- (p0 .+^) ^<< integral        -< v
     die <- after missileLifeSpan () -< ()
     returnA -< ObjOutput {

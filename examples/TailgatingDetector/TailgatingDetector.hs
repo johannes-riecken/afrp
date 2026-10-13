@@ -179,7 +179,7 @@ tailgating = AU.provided follow tooClose never
         -- last 30 s.
         tooClose :: SF (Car, Car) (Event ())
         tooClose = proc (c1, c2) -> do
-            ead <- recur (snapAfter 30 <<< avgDist) -< (c1, c2)
+            ead <- AU.recur (AU.snapAfter 30 <<< avgDist) -< (c1, c2)
             returnA -< (filterE (<1.0) ead) `tag` ()
 
         avgDist = proc ((p1, v1), (p2, v2)) -> do
